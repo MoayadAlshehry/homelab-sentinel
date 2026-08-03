@@ -7,14 +7,10 @@ import datetime
 from app.database import get_db
 
 INTERFACE = os.getenv("SCAN_INTERFACE", "eth0")
+MISSED_SCAN_THRESHOLD = int(os.getenv("MISSED_SCAN_THRESHOLD", "3"))
 
 def run_lan_scan():
-    """
-    Runs arp-scan (or nmap -sn fallback) on local LAN interface.
-    Returns list of dicts: [{'mac': '...', 'ip': '...', 'vendor': '...'}]
-    """
     devices = []
-    # Try arp-scan first
     try:
         cmd = ["arp-scan", "--localnet", f"--interface={INTERFACE}", "--ignoredups", "-q"]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
@@ -32,7 +28,6 @@ def run_lan_scan():
     except Exception as e:
         print(f"arp-scan execution notice: {e}, attempting nmap fallback", flush=True)
 
-    # Fallback to nmap -sn
     try:
         cmd = ["nmap", "-sn", "192.168.0.0/24"]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -72,7 +67,7 @@ def process_scan_results():
     now_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     time_display = datetime.datetime.now().strftime("%H:%M:%S")
 
-    cursor.execute("SELECT mac, ip, vendor, is_online FROM devices")
+    cursor.execute("SELECT mac, ip, vendor, is_online, missed_scans FROM devices")
     existing_devices = {row["mac"]: dict(row) for row in cursor.fetchall()}
 
     # 1. Process scanned online devices
@@ -81,12 +76,12 @@ def process_scan_results():
             prev = existing_devices[mac]
             cursor.execute("""
                 UPDATE devices 
-                SET ip = ?, vendor = ?, last_seen = ?, is_online = 1 
+                SET ip = ?, vendor = ?, last_seen = ?, is_online = 1, missed_scans = 0 
                 WHERE mac = ?
             """, (info["ip"], info["vendor"], now_utc, mac))
             
             if prev["is_online"] == 0:
-                msg = f"Device '{info['vendor']}' ({info['ip']} / {mac}) joined the network at {time_display}"
+                msg = f"Device '{info['vendor']}' ({info['ip']} / {mac}) reconnected to the network at {time_display}"
                 cursor.execute("""
                     INSERT INTO network_events (mac, ip, event_type, message, timestamp)
                     VALUES (?, ?, 'JOINED', ?, ?)
@@ -94,8 +89,8 @@ def process_scan_results():
                 print(f"[NETWORK EVENT] {msg}", flush=True)
         else:
             cursor.execute("""
-                INSERT INTO devices (mac, ip, vendor, first_seen, last_seen, is_online)
-                VALUES (?, ?, ?, ?, ?, 1)
+                INSERT INTO devices (mac, ip, vendor, first_seen, last_seen, is_online, missed_scans)
+                VALUES (?, ?, ?, ?, ?, 1, 0)
             """, (mac, info["ip"], info["vendor"], now_utc, now_utc))
             
             msg = f"New device '{info['vendor']}' ({info['ip']} / {mac}) joined the network for the first time at {time_display}"
@@ -105,16 +100,20 @@ def process_scan_results():
             """, (mac, info["ip"], msg, now_utc))
             print(f"[NETWORK EVENT] {msg}", flush=True)
 
-    # 2. Process devices that went offline
+    # 2. Process devices missed in current scan cycle (Debounce threshold)
     for mac, prev in existing_devices.items():
-        if prev["is_online"] == 1 and mac not in scanned_macs:
-            cursor.execute("UPDATE devices SET is_online = 0 WHERE mac = ?", (mac,))
-            msg = f"Device '{prev['vendor']}' ({prev['ip']} / {mac}) left the network at {time_display}"
-            cursor.execute("""
-                INSERT INTO network_events (mac, ip, event_type, message, timestamp)
-                VALUES (?, ?, 'LEFT', ?, ?)
-            """, (mac, prev["ip"], msg, now_utc))
-            print(f"[NETWORK EVENT] {msg}", flush=True)
+        if mac not in scanned_macs:
+            new_missed = prev["missed_scans"] + 1
+            if new_missed >= MISSED_SCAN_THRESHOLD and prev["is_online"] == 1:
+                cursor.execute("UPDATE devices SET is_online = 0, missed_scans = ? WHERE mac = ?", (new_missed, mac))
+                msg = f"Device '{prev['vendor']}' ({prev['ip']} / {mac}) left the network (missed {MISSED_SCAN_THRESHOLD} consecutive scans) at {time_display}"
+                cursor.execute("""
+                    INSERT INTO network_events (mac, ip, event_type, message, timestamp)
+                    VALUES (?, ?, 'LEFT', ?, ?)
+                """, (mac, prev["ip"], msg, now_utc))
+                print(f"[NETWORK EVENT] {msg}", flush=True)
+            else:
+                cursor.execute("UPDATE devices SET missed_scans = ? WHERE mac = ?", (new_missed, mac))
 
     conn.commit()
     conn.close()

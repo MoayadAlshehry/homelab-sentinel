@@ -32,9 +32,16 @@ def init_db(hash_password_fn):
         vendor TEXT DEFAULT 'Unknown',
         first_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
         last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
-        is_online BOOLEAN NOT NULL DEFAULT 1
+        is_online BOOLEAN NOT NULL DEFAULT 1,
+        missed_scans INTEGER NOT NULL DEFAULT 0
     );
     """)
+
+    try:
+        cursor.execute("ALTER TABLE devices ADD COLUMN missed_scans INTEGER NOT NULL DEFAULT 0")
+        conn.commit()
+    except Exception:
+        pass
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS network_events (
