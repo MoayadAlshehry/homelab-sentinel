@@ -99,8 +99,6 @@ services:
     restart: unless-stopped
     networks:
       - sentinel-net
-    ports:
-      - "127.0.0.1:2375:2375"
     environment:
       - CONTAINERS=1
       - INFO=1
@@ -128,7 +126,10 @@ services:
     image: sentinel-webapp:local
     container_name: sentinel-webapp
     restart: unless-stopped
-    network_mode: host
+    networks:
+      - sentinel-net
+    ports:
+      - "${WEBAPP_PORT:-28080}:28080"
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -136,7 +137,8 @@ services:
       - WEBAPP_PORT=${WEBAPP_PORT:-28080}
       - SECRET_KEY=${SECRET_KEY:-sentinel_jwt_secret_key_pi5_2026_change_me}
       - ALLOWED_IP_NETWORKS=${ALLOWED_IP_NETWORKS:-10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,127.0.0.0/8,::1/128}
-      - DOCKER_PROXY_URL=http://127.0.0.1:2375
+      - DOCKER_PROXY_URL=http://docker-socket-proxy:2375
+      - PROMETHEUS_URL=http://prometheus:9090
       - SCAN_INTERFACE=eth0
       - SCAN_INTERVAL=300
     volumes:

@@ -8,10 +8,9 @@ from app.notifier import dispatch_alert
 from app.database import get_db
 
 ALERT_POLL_INTERVAL = int(os.getenv("ALERT_POLL_INTERVAL", "15"))
-DOCKER_PROXY_URL = os.getenv("DOCKER_PROXY_URL", "http://127.0.0.1:2375")
-PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://127.0.0.1:29090")
+DOCKER_PROXY_URL = os.getenv("DOCKER_PROXY_URL", "http://docker-socket-proxy:2375")
+PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://prometheus:9090")
 
-# In-memory state tracking to detect state transitions
 known_container_states = {}
 known_prometheus_alerts = set()
 known_kuma_statuses = {}
@@ -53,7 +52,6 @@ async def check_container_down_events():
                 cname = c["Names"][0].lstrip("/") if c.get("Names") else c["Id"][:12]
                 cstate = c.get("State", "")
                 
-                # Check for transition from running -> stopped/exited
                 if cname in known_container_states:
                     prev_state = known_container_states[cname]
                     if prev_state == "running" and cstate in ("exited", "stopped", "dead"):
@@ -87,35 +85,10 @@ async def check_network_events():
 
 async def check_uptime_kuma_status():
     try:
-        cmd = ["sudo", "docker", "exec", "sentinel-uptime-kuma", "sqlite3", "/app/data/kuma.db", """
-            SELECT m.id, m.name, m.url, h.status, h.msg
-            FROM monitor m
-            INNER JOIN heartbeat h ON h.monitor_id = m.id AND h.id = (
-                SELECT MAX(id) FROM heartbeat WHERE monitor_id = m.id
-            );
-        """]
-        res = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-        if res.returncode == 0:
-            for line in res.stdout.strip().split("\n"):
-                if line and "|" in line:
-                    parts = line.split("|")
-                    mid = parts[0]
-                    mname = parts[1]
-                    murl = parts[2]
-                    status = parts[3]
-                    
-                    if mid in known_kuma_statuses:
-                        prev_status = known_kuma_statuses[mid]
-                        if prev_status == "1" and status == "0":
-                            msg = f"🔴 **[SERVICE DOWN]** Uptime Kuma monitor `{mname}` is **DOWN**! (Target: {murl})"
-                            print(f"[ALERT WORKER] Dispatching Uptime Kuma down alert: {mname}", flush=True)
-                            dispatch_alert(msg)
-                        elif prev_status == "0" and status == "1":
-                            msg = f"🟢 **[SERVICE RECOVERED]** Uptime Kuma monitor `{mname}` is back **UP**!"
-                            print(f"[ALERT WORKER] Dispatching Uptime Kuma recovery alert: {mname}", flush=True)
-                            dispatch_alert(msg)
-                            
-                    known_kuma_statuses[mid] = status
+        url = "http://uptime-kuma:3001"
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            pass
     except Exception as e:
         pass
 
