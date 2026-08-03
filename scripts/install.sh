@@ -104,9 +104,9 @@ if ! docker compose version &>/dev/null; then
 fi
 log_success "Docker Compose plugin verified ($(docker compose version))"
 
-# Check & Install System Packages: arp-scan, nmap, avahi-daemon, ufw, curl, iproute2
+# Check & Install System Packages: arp-scan, nmap, avahi-daemon, ufw, curl, iproute2, python3
 PACKAGES_TO_INSTALL=()
-for pkg in arp-scan nmap avahi-daemon ufw curl iproute2; do
+for pkg in arp-scan nmap avahi-daemon ufw curl iproute2 python3; do
     if ! dpkg -l | grep -E "^ii\s+$pkg\b" &>/dev/null; then
         PACKAGES_TO_INSTALL+=("$pkg")
     fi
@@ -215,27 +215,53 @@ echo "ALLOWED_IP_NETWORKS=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,
 log_success "Environment file configured (.env)"
 
 # ------------------------------------------------------------------------------
-# STEP 5: Defense-in-Depth UFW Firewall Scoped Rules
+# STEP 5: Dynamic LAN Subnet Auto-Detection & Scoped UFW Rules
 # ------------------------------------------------------------------------------
-log_step "5/7" "Configuring Defense-in-Depth UFW Firewall Scoped Rules"
+log_step "5/7" "Configuring Dynamic LAN Subnet Auto-Detection & Scoped UFW Rules"
 
-# Detect primary LAN subnet automatically
-LAN_SUBNET="$(ip route show | grep -E 'src 192\.|src 10\.|src 172\.' | awk '{print $1}' | head -n 1 || echo "192.168.0.0/16")"
-log_info "Detected LAN Subnet for Firewall Rules: $LAN_SUBNET"
+# Detect default network interface (e.g. eth0, wlan0) from default route
+DEFAULT_IFACE="$(ip route 2>/dev/null | awk '/^default/ {print $5; exit}')"
+if [[ -z "$DEFAULT_IFACE" ]]; then
+    DEFAULT_IFACE="$(ip -o link show 2>/dev/null | awk -F': ' '$2 != "lo" && $2 !~ /^docker|^br-|^veth/ {print $2; exit}')"
+fi
+
+IP_CIDR=""
+if [[ -n "$DEFAULT_IFACE" ]]; then
+    IP_CIDR="$(ip -o -f inet addr show "$DEFAULT_IFACE" 2>/dev/null | awk '{print $4}' | head -n1)"
+fi
+
+LAN_SUBNET=""
+if [[ -n "$IP_CIDR" ]]; then
+    LAN_SUBNET="$(python3 -c "import ipaddress; print(ipaddress.ip_network('$IP_CIDR', strict=False))" 2>/dev/null || echo "")"
+fi
+
+if [[ -n "$LAN_SUBNET" && -n "$DEFAULT_IFACE" ]]; then
+    log_success "Detected LAN Subnet: ${BOLD}${LAN_SUBNET}${RESET} (via interface ${DEFAULT_IFACE})"
+else
+    log_warn "Could not automatically detect active LAN subnet from default route interface."
+    prompt_input "Enter your LAN subnet in CIDR notation (e.g. 192.168.1.0/24): " user_subnet
+    if [[ -n "$user_subnet" ]]; then
+        LAN_SUBNET="$user_subnet"
+        log_info "Using user-entered LAN subnet: $LAN_SUBNET"
+    else
+        LAN_SUBNET="192.168.0.0/16"
+        log_warn "Falling back to default LAN subnet: $LAN_SUBNET"
+    fi
+fi
 
 PORTS=(28080 23000 23001 29090 29100)
 
 if command -v ufw &>/dev/null; then
     UFW_STATUS="$(sudo ufw status | head -n 1 || echo "inactive")"
     if echo "$UFW_STATUS" | grep -iq "active"; then
-        log_info "UFW Firewall is active. Adding scoped LAN rules for ports: ${PORTS[*]}..."
+        log_info "UFW Firewall is active. Applying scoped rules for subnet ${LAN_SUBNET} across ports: ${PORTS[*]}..."
         for port in "${PORTS[@]}"; do
             sudo ufw allow from "$LAN_SUBNET" to any port "$port" proto tcp comment "Homelab Sentinel Port $port" &>/dev/null || true
         done
         sudo ufw reload &>/dev/null || true
         log_success "UFW firewall rules applied for subnet $LAN_SUBNET"
     else
-        log_info "UFW is installed but currently inactive. Adding rules for when UFW is enabled..."
+        log_info "UFW is installed but currently inactive. Staging scoped rules for subnet ${LAN_SUBNET}..."
         for port in "${PORTS[@]}"; do
             sudo ufw allow from "$LAN_SUBNET" to any port "$port" proto tcp comment "Homelab Sentinel Port $port" &>/dev/null || true
         done
