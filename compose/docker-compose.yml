@@ -20,6 +20,8 @@ services:
       - "${PROMETHEUS_PORT:-29090}:9090"
     volumes:
       - prometheus_data:/prometheus
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
     healthcheck:
       test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:9090/-/healthy || exit 1"]
       interval: 10s
@@ -35,6 +37,15 @@ services:
       - sentinel-net
     ports:
       - "${NODE_EXPORTER_PORT:-29100}:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     healthcheck:
       test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:9100/ || exit 1"]
       interval: 10s
@@ -54,6 +65,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin_sentinel_pass_change_me}
     volumes:
       - grafana_data:/var/lib/grafana
+      - ../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ../grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ../grafana/dashboards:/var/lib/grafana/dashboards:ro
     healthcheck:
       test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:3000/api/health || exit 1"]
       interval: 10s
