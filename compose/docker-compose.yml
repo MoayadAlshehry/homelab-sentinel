@@ -8,6 +8,7 @@ volumes:
   prometheus_data:
   grafana_data:
   uptime_kuma_data:
+  webapp_data:
 
 services:
   prometheus:
@@ -91,3 +92,26 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  webapp:
+    build:
+      context: ../webapp
+      dockerfile: Dockerfile
+    image: sentinel-webapp:local
+    container_name: sentinel-webapp
+    restart: unless-stopped
+    networks:
+      - sentinel-net
+    ports:
+      - "${WEBAPP_PORT:-28080}:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-sentinel_jwt_secret_key_pi5_2026_change_me}
+      - ALLOWED_IP_NETWORKS=${ALLOWED_IP_NETWORKS:-10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,127.0.0.0/8,::1/128}
+    volumes:
+      - webapp_data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
