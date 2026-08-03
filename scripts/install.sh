@@ -35,6 +35,20 @@ log_error() {
     echo -e "${RED}✖${RESET} ${1}"
 }
 
+prompt_input() {
+    local prompt_text="$1"
+    local result_var="$2"
+    local input_val=""
+    if [[ -t 0 ]]; then
+        read -rp "$prompt_text" input_val || true
+    elif [[ -c /dev/tty ]]; then
+        read -rp "$prompt_text" input_val < /dev/tty || true
+    else
+        echo "$prompt_text (non-interactive session, using default)"
+    fi
+    eval "$result_var=\"$input_val\""
+}
+
 echo -e "${BOLD}${CYAN}"
 echo "======================================================================"
 echo "         🛡️  HOMELAB SENTINEL — RASPBERRY PI 5 INSTALLER  🛡️"
@@ -156,15 +170,14 @@ if [[ -z "$existing_secret_key" ]]; then
     echo "SECRET_KEY=$new_secret_key" >> "$ENV_FILE"
 fi
 
-# Interactive Prompts for Credentials with safe read fallback
+# Interactive Prompts for Credentials
 echo -e "\n${BOLD}=== INTERACTIVE CONFIGURATION (Press Enter for defaults) ===${RESET}"
 
 if [[ -n "$existing_grafana_pass" && "$existing_grafana_pass" != "admin_sentinel_pass_change_me" ]]; then
     GRAFANA_PASS="$existing_grafana_pass"
     log_info "Using existing Grafana admin password from .env"
 else
-    user_grafana_pass=""
-    read -rp "Enter Grafana Admin Password [Press Enter to auto-generate strong password]: " user_grafana_pass || true
+    prompt_input "Enter Grafana Admin Password [Press Enter to auto-generate strong password]: " user_grafana_pass
     if [[ -z "$user_grafana_pass" ]]; then
         GRAFANA_PASS="$(openssl rand -hex 12 2>/dev/null || echo "SentinelGrafanaPass2026!")"
         log_info "Auto-generated Grafana Password: $GRAFANA_PASS"
@@ -173,13 +186,9 @@ else
     fi
 fi
 
-user_tg_token=""
-user_tg_chat=""
-user_discord_url=""
-
-read -rp "Enter Telegram Bot Token [Optional - Press Enter to skip]: " user_tg_token || true
-read -rp "Enter Telegram Chat ID [Optional - Press Enter to skip]: " user_tg_chat || true
-read -rp "Enter Discord Webhook URL [Optional - Press Enter to skip]: " user_discord_url || true
+prompt_input "Enter Telegram Bot Token [Optional - Press Enter to skip]: " user_tg_token
+prompt_input "Enter Telegram Chat ID [Optional - Press Enter to skip]: " user_tg_chat
+prompt_input "Enter Discord Webhook URL [Optional - Press Enter to skip]: " user_discord_url
 
 # Update .env file idempotently
 sed -i '/^GRAFANA_ADMIN_PASSWORD=/d' "$ENV_FILE"
