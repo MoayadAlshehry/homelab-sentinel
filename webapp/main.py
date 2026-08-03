@@ -4,10 +4,10 @@ from app.database import init_db
 from app.security import hash_password
 from app.middleware import IPRestrictionMiddleware
 from app.routes_auth import router as auth_router
+from app.routes_containers import router as containers_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize DB & generate first-run credentials if needed
     init_db(hash_password)
     yield
 
@@ -17,11 +17,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Add IP restriction middleware
 app.add_middleware(IPRestrictionMiddleware)
 
-# Include Auth Router
 app.include_router(auth_router)
+app.include_router(containers_router)
 
 @app.get("/api/health")
 def health_check():
