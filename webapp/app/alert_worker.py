@@ -8,8 +8,9 @@ from app.notifier import dispatch_alert
 from app.database import get_db
 
 ALERT_POLL_INTERVAL = int(os.getenv("ALERT_POLL_INTERVAL", "15"))
-DOCKER_PROXY_URL = os.getenv("DOCKER_PROXY_URL", "http://docker-socket-proxy:2375")
-PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://prometheus:9090")
+DOCKER_PROXY_URL = os.getenv("DOCKER_PROXY_URL", "http://127.0.0.1:2375")
+PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://127.0.0.1:29090")
+UPTIME_KUMA_URL = os.getenv("UPTIME_KUMA_URL", "http://127.0.0.1:23001")
 
 known_container_states = {}
 known_prometheus_alerts = set()
@@ -85,7 +86,7 @@ async def check_network_events():
 
 async def check_uptime_kuma_status():
     try:
-        url = "http://uptime-kuma:3001"
+        url = f"{UPTIME_KUMA_URL}/"
         req = urllib.request.Request(url)
         with urllib.request.urlopen(req, timeout=5) as resp:
             pass
