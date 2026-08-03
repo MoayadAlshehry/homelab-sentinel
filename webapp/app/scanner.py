@@ -10,6 +10,36 @@ from app.database import get_db
 INTERFACE = os.getenv("SCAN_INTERFACE", "eth0")
 MISSED_SCAN_THRESHOLD = int(os.getenv("MISSED_SCAN_THRESHOLD", "3"))
 
+_OUI_MAP = None
+
+def load_oui_database():
+    """Load OUI vendor database from system files (/usr/share/nmap/nmap-mac-prefixes and arp-scan OUI)."""
+    oui_map = {}
+    for oui_file in ["/usr/share/nmap/nmap-mac-prefixes", "/usr/share/arp-scan/ieee-oui.txt"]:
+        if os.path.exists(oui_file):
+            try:
+                with open(oui_file, "r", encoding="utf-8", errors="ignore") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#"):
+                            parts = line.split("\t") if "\t" in line else line.split(" ", 1)
+                            if len(parts) >= 2:
+                                prefix = parts[0].strip().replace(":", "").replace("-", "").upper()[:6]
+                                vendor = parts[1].strip()
+                                if prefix and prefix not in oui_map:
+                                    oui_map[prefix] = vendor
+            except Exception as e:
+                print(f"Notice: Failed loading OUI database from {oui_file}: {e}", flush=True)
+    return oui_map
+
+def get_vendor_for_mac(mac: str) -> str:
+    global _OUI_MAP
+    if _OUI_MAP is None:
+        _OUI_MAP = load_oui_database()
+    clean_mac = mac.replace(":", "").replace("-", "").strip().upper()
+    prefix = clean_mac[:6]
+    return _OUI_MAP.get(prefix, "Unknown Vendor")
+
 def get_lan_subnet():
     """Dynamically determine active LAN subnet in CIDR notation."""
     try:
@@ -25,13 +55,12 @@ def get_lan_subnet():
 def run_lan_scan():
     devices = []
     
-    # 1. Primary L2 Scanner: arp-scan with explicit OUI file path
+    # 1. Primary L2 Scanner: arp-scan (resolves real MACs and real IEEE OUI vendors)
     try:
         cmd = [
             "arp-scan",
             "--localnet",
             f"--interface={INTERFACE}",
-            "--ouifile=/usr/share/arp-scan/ieee-oui.txt",
             "--ignoredups",
             "-q"
         ]
@@ -42,7 +71,8 @@ def run_lan_scan():
                 if len(parts) >= 2:
                     ip = parts[0].strip()
                     mac = parts[1].strip().upper()
-                    vendor = parts[2].strip() if len(parts) >= 3 and parts[2].strip() else "Unknown Vendor"
+                    raw_vendor = parts[2].strip() if len(parts) >= 3 and parts[2].strip() else None
+                    vendor = raw_vendor if raw_vendor and raw_vendor != "Unknown" else get_vendor_for_mac(mac)
                     if re.match(r"^([0-9A-FA-F]{2}:){5}[0-9A-FA-F]{2}$", mac):
                         devices.append({"mac": mac, "ip": ip, "vendor": vendor})
             if devices:
@@ -57,16 +87,17 @@ def run_lan_scan():
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         current_ip = None
         current_mac = None
-        current_vendor = "Unknown Vendor"
+        current_vendor = None
         
         for line in res.stdout.splitlines():
             ip_match = re.search(r"Nmap scan report for (?:[^\s]+ \()?([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\)?", line)
             if ip_match:
                 if current_ip and current_mac:
-                    devices.append({"mac": current_mac, "ip": current_ip, "vendor": current_vendor})
+                    vendor = current_vendor if current_vendor and current_vendor != "Unknown" else get_vendor_for_mac(current_mac)
+                    devices.append({"mac": current_mac, "ip": current_ip, "vendor": vendor})
                 current_ip = ip_match.group(1)
                 current_mac = None
-                current_vendor = "Unknown Vendor"
+                current_vendor = None
                 
             mac_match = re.search(r"MAC Address: ([0-9A-FA-F:]+)(?: \((.*?)\))?", line)
             if mac_match:
@@ -75,7 +106,8 @@ def run_lan_scan():
                     current_vendor = mac_match.group(2)
 
         if current_ip and current_mac:
-            devices.append({"mac": current_mac, "ip": current_ip, "vendor": current_vendor})
+            vendor = current_vendor if current_vendor and current_vendor != "Unknown" else get_vendor_for_mac(current_mac)
+            devices.append({"mac": current_mac, "ip": current_ip, "vendor": vendor})
 
     except Exception as e:
         print(f"nmap scan notice: {e}", flush=True)
