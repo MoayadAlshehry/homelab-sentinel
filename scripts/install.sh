@@ -288,6 +288,12 @@ START_TIME=$(date +%s)
 TIMEOUT=180
 ALL_HEALTHY=false
 
+# Use docker command directly (user is in docker group)
+DOCKER_BIN="docker"
+if ! command -v docker &>/dev/null || ! docker ps &>/dev/null; then
+    DOCKER_BIN="sudo docker"
+fi
+
 while true; do
     CURRENT_TIME=$(date +%s)
     ELAPSED=$((CURRENT_TIME - START_TIME))
@@ -297,15 +303,16 @@ while true; do
         break
     fi
 
-    # Clean, safe container inspect health check
+    # Clean, safe container inspect health check without sudo prompting
     HEALTHY_COUNT="$(python3 -c "
 import subprocess
 containers = ['sentinel-prometheus', 'sentinel-node-exporter', 'sentinel-grafana', 'sentinel-uptime-kuma', 'sentinel-docker-socket-proxy', 'sentinel-webapp']
 count = 0
+docker_cmd = '$DOCKER_BIN'.split()
 for c in containers:
     try:
         res = subprocess.run(
-            ['docker', 'inspect', '--format', '{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}', c],
+            docker_cmd + ['inspect', '--format', '{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}', c],
             capture_output=True, text=True, stderr=subprocess.DEVNULL
         )
         out = res.stdout.strip()
