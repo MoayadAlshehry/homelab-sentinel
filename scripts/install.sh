@@ -1,4 +1,3 @@
-#!/usr/bin/env bgsh
 #!/usr/bin/env bash
 # ==============================================================================
 # Homelab Sentinel — Automated One-Command Production Installer & Deployer
@@ -157,14 +156,15 @@ if [[ -z "$existing_secret_key" ]]; then
     echo "SECRET_KEY=$new_secret_key" >> "$ENV_FILE"
 fi
 
-# Interactive Prompts for Credentials
+# Interactive Prompts for Credentials with safe read fallback
 echo -e "\n${BOLD}=== INTERACTIVE CONFIGURATION (Press Enter for defaults) ===${RESET}"
 
 if [[ -n "$existing_grafana_pass" && "$existing_grafana_pass" != "admin_sentinel_pass_change_me" ]]; then
     GRAFANA_PASS="$existing_grafana_pass"
     log_info "Using existing Grafana admin password from .env"
 else
-    read -rp "Enter Grafana Admin Password [Press Enter to auto-generate strong password]: " user_grafana_pass
+    user_grafana_pass=""
+    read -rp "Enter Grafana Admin Password [Press Enter to auto-generate strong password]: " user_grafana_pass || true
     if [[ -z "$user_grafana_pass" ]]; then
         GRAFANA_PASS="$(openssl rand -hex 12 2>/dev/null || echo "SentinelGrafanaPass2026!")"
         log_info "Auto-generated Grafana Password: $GRAFANA_PASS"
@@ -173,9 +173,13 @@ else
     fi
 fi
 
-read -rp "Enter Telegram Bot Token [Optional - Press Enter to skip]: " user_tg_token
-read -rp "Enter Telegram Chat ID [Optional - Press Enter to skip]: " user_tg_chat
-read -rp "Enter Discord Webhook URL [Optional - Press Enter to skip]: " user_discord_url
+user_tg_token=""
+user_tg_chat=""
+user_discord_url=""
+
+read -rp "Enter Telegram Bot Token [Optional - Press Enter to skip]: " user_tg_token || true
+read -rp "Enter Telegram Chat ID [Optional - Press Enter to skip]: " user_tg_chat || true
+read -rp "Enter Discord Webhook URL [Optional - Press Enter to skip]: " user_discord_url || true
 
 # Update .env file idempotently
 sed -i '/^GRAFANA_ADMIN_PASSWORD=/d' "$ENV_FILE"
