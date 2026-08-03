@@ -8,7 +8,9 @@ from app.middleware import IPRestrictionMiddleware
 from app.routes_auth import router as auth_router
 from app.routes_containers import router as containers_router
 from app.routes_network import router as network_router
+from app.routes_settings import router as settings_router
 from app.scanner import process_scan_results
+from app.alert_worker import alert_polling_loop
 
 SCAN_INTERVAL = int(os.getenv("SCAN_INTERVAL", "300"))
 
@@ -26,8 +28,10 @@ async def periodic_network_scanner():
 async def lifespan(app: FastAPI):
     init_db(hash_password)
     scanner_task = asyncio.create_task(periodic_network_scanner())
+    alert_task = asyncio.create_task(alert_polling_loop())
     yield
     scanner_task.cancel()
+    alert_task.cancel()
 
 app = FastAPI(
     title="Homelab Sentinel WebApp",
@@ -40,6 +44,7 @@ app.add_middleware(IPRestrictionMiddleware)
 app.include_router(auth_router)
 app.include_router(containers_router)
 app.include_router(network_router)
+app.include_router(settings_router)
 
 @app.get("/api/health")
 def health_check():

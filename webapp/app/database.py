@@ -37,12 +37,6 @@ def init_db(hash_password_fn):
     );
     """)
 
-    try:
-        cursor.execute("ALTER TABLE devices ADD COLUMN missed_scans INTEGER NOT NULL DEFAULT 0")
-        conn.commit()
-    except Exception:
-        pass
-
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS network_events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,10 +44,30 @@ def init_db(hash_password_fn):
         ip TEXT NOT NULL,
         event_type TEXT NOT NULL,
         message TEXT NOT NULL,
+        alerted BOOLEAN NOT NULL DEFAULT 0,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
     
+    # Migrations for missing columns if any
+    try:
+        cursor.execute("ALTER TABLE devices ADD COLUMN missed_scans INTEGER NOT NULL DEFAULT 0")
+    except Exception:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE network_events ADD COLUMN alerted BOOLEAN NOT NULL DEFAULT 0")
+    except Exception:
+        pass
+        
     conn.commit()
 
     cursor.execute("SELECT COUNT(*) as cnt FROM users")
