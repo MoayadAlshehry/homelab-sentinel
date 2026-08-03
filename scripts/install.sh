@@ -297,11 +297,26 @@ while true; do
         break
     fi
 
-    # Check status of containers
-    UNHEALTHY_COUNT=$(sudo docker compose -f "$COMPOSE_FILE" ps --format json 2>/dev/null | grep -ic '"unhealthy"' || echo 0)
-    RUNNING_COUNT=$(sudo docker compose -f "$COMPOSE_FILE" ps --format json 2>/dev/null | grep -ic '"running"' || echo 0)
+    # Robust container inspect health check using python
+    HEALTHY_COUNT="$(python3 -c "
+import subprocess
+containers = ['sentinel-prometheus', 'sentinel-node-exporter', 'sentinel-grafana', 'sentinel-uptime-kuma', 'sentinel-docker-socket-proxy', 'sentinel-webapp']
+count = 0
+for c in containers:
+    res = subprocess.run(['sudo', 'docker', 'inspect', '--format', '{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}', c], capture_output=True, text=True)
+    out = res.stdout.strip()
+    if out:
+        parts = out.split()
+        status = parts[0]
+        health = parts[1] if len(parts) > 1 else 'none'
+        if status == 'running' and health in ('healthy', 'none'):
+            count += 1
+print(count)
+" 2>/dev/null || echo 0)"
 
-    if [[ $RUNNING_COUNT -ge 6 && $UNHEALTHY_COUNT -eq 0 ]]; then
+    HEALTHY_COUNT="$(echo "$HEALTHY_COUNT" | tr -d '\r\n\t ')"
+
+    if [[ "$HEALTHY_COUNT" =~ ^[0-9]+$ ]] && [[ "$HEALTHY_COUNT" -ge 6 ]]; then
         ALL_HEALTHY=true
         break
     fi
