@@ -4,6 +4,8 @@ import json
 import sqlite3
 from app.database import get_db
 
+USER_AGENT = "HomelabSentinel/1.0 (RaspberryPi5 Monitoring Service)"
+
 def get_setting(key: str) -> str:
     conn = get_db()
     cursor = conn.cursor()
@@ -23,7 +25,11 @@ def send_telegram_message(token: str, chat_id: str, text: str) -> tuple[bool, st
         "parse_mode": "Markdown"
     }
     data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": USER_AGENT
+    }
+    req = urllib.request.Request(url, data=data, headers=headers, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
             res_data = json.loads(resp.read().decode("utf-8"))
@@ -44,10 +50,16 @@ def send_discord_message(webhook_url: str, text: str) -> tuple[bool, str]:
         "content": text
     }
     data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(webhook_url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": USER_AGENT
+    }
+    req = urllib.request.Request(webhook_url, data=data, headers=headers, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            return True, "Discord webhook notification sent successfully"
+            if resp.status in (200, 204):
+                return True, "Discord webhook notification sent successfully"
+            return True, f"Discord webhook delivered (HTTP {resp.status})"
     except urllib.error.HTTPError as e:
         err_msg = e.read().decode("utf-8", errors="replace")
         return False, f"Discord HTTP {e.code}: {err_msg}"
