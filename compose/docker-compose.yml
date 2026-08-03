@@ -62,13 +62,13 @@ services:
       - sentinel-net
     ports:
       - "${GRAFANA_PORT:-23000}:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin_sentinel_pass_change_me}
     volumes:
       - grafana_data:/var/lib/grafana
-      - ../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
-      - ../grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
-      - ../grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ../grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
     healthcheck:
       test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:3000/api/health || exit 1"]
       interval: 10s
@@ -103,6 +103,7 @@ services:
       - CONTAINERS=1
       - INFO=1
       - POST=1
+      - STATS=1
       - BUILD=0
       - EXEC=0
       - IMAGES=0

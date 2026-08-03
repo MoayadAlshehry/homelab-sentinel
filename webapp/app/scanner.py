@@ -4,13 +4,37 @@ import re
 import os
 import time
 import datetime
+import socket
 from app.database import get_db
 
 INTERFACE = os.getenv("SCAN_INTERFACE", "eth0")
 MISSED_SCAN_THRESHOLD = int(os.getenv("MISSED_SCAN_THRESHOLD", "3"))
 
+def get_lan_subnet():
+    """Dynamically determine active LAN subnet in CIDR notation."""
+    try:
+        # Check host network route or default route IP
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        parts = local_ip.split(".")
+        return f"{parts[0]}.{parts[1]}.{parts[2]}.0/24"
+    except Exception:
+        return "192.168.0.0/24"
+
+def generate_synthetic_mac(ip_str: str) -> str:
+    """Generate a deterministic synthetic unicast MAC address from an IPv4 string."""
+    try:
+        parts = [int(p) for p in ip_str.split(".")]
+        return f"02:00:{parts[0]:02X}:{parts[1]:02X}:{parts[2]:02X}:{parts[3]:02X}"
+    except Exception:
+        return "02:00:00:00:00:00"
+
 def run_lan_scan():
     devices = []
+    
+    # 1. Try arp-scan first
     try:
         cmd = ["arp-scan", "--localnet", f"--interface={INTERFACE}", "--ignoredups", "-q"]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
@@ -28,21 +52,24 @@ def run_lan_scan():
     except Exception as e:
         print(f"arp-scan execution notice: {e}, attempting nmap fallback", flush=True)
 
+    # 2. Robust nmap scan fallback
+    target_subnet = get_lan_subnet()
     try:
-        cmd = ["nmap", "-sn", "192.168.0.0/24"]
+        cmd = ["nmap", "-sn", target_subnet]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         current_ip = None
         current_mac = None
-        current_vendor = "Unknown"
+        current_vendor = "LAN Host"
         
         for line in res.stdout.splitlines():
             ip_match = re.search(r"Nmap scan report for (?:[^\s]+ \()?([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\)?", line)
             if ip_match:
-                if current_ip and current_mac:
-                    devices.append({"mac": current_mac, "ip": current_ip, "vendor": current_vendor})
+                if current_ip:
+                    mac_addr = current_mac or generate_synthetic_mac(current_ip)
+                    devices.append({"mac": mac_addr, "ip": current_ip, "vendor": current_vendor})
                 current_ip = ip_match.group(1)
                 current_mac = None
-                current_vendor = "Unknown"
+                current_vendor = "LAN Host"
                 
             mac_match = re.search(r"MAC Address: ([0-9A-FA-F:]+)(?: \((.*?)\))?", line)
             if mac_match:
@@ -50,8 +77,10 @@ def run_lan_scan():
                 if mac_match.group(2):
                     current_vendor = mac_match.group(2)
 
-        if current_ip and current_mac:
-            devices.append({"mac": current_mac, "ip": current_ip, "vendor": current_vendor})
+        if current_ip:
+            mac_addr = current_mac or generate_synthetic_mac(current_ip)
+            devices.append({"mac": mac_addr, "ip": current_ip, "vendor": current_vendor})
+
     except Exception as e:
         print(f"nmap scan failed: {e}", flush=True)
 
