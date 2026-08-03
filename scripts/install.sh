@@ -299,7 +299,7 @@ while true; do
     ELAPSED=$((CURRENT_TIME - START_TIME))
 
     if [[ $ELAPSED -ge $TIMEOUT ]]; then
-        log_warn "Timeout reached while waiting for containers. Checking current state..."
+        log_warn "Timeout reached while waiting for containers."
         break
     fi
 
@@ -340,8 +340,11 @@ done
 if [[ "$ALL_HEALTHY" == "true" ]]; then
     log_success "All 6 Homelab Sentinel containers are running and healthy!"
 else
-    log_warn "Containers launched. Current stack status:"
+    log_error "Timeout reached: not all 6 Sentinel containers reported healthy status within ${TIMEOUT}s."
+    log_warn "Current stack status:"
     sudo docker compose -f "$COMPOSE_FILE" ps
+    log_error "Deployment failed due to container health check timeout."
+    exit 1
 fi
 
 # ------------------------------------------------------------------------------
