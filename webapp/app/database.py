@@ -24,17 +24,38 @@ def init_db(hash_password_fn):
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS devices (
+        mac TEXT PRIMARY KEY,
+        ip TEXT NOT NULL,
+        vendor TEXT DEFAULT 'Unknown',
+        first_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+        is_online BOOLEAN NOT NULL DEFAULT 1
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS network_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        mac TEXT NOT NULL,
+        ip TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        message TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+    
     conn.commit()
 
-    # Check if any user exists
     cursor.execute("SELECT COUNT(*) as cnt FROM users")
     count = cursor.fetchone()["cnt"]
 
     if count == 0:
-        # First-run credential generation
-        random_suffix = secrets.token_hex(2)  # 4 hex chars e.g. a3f8
+        random_suffix = secrets.token_hex(2)
         generated_username = f"admin-{random_suffix}"
-        generated_password = secrets.token_urlsafe(12)  # Strong random password
+        generated_password = secrets.token_urlsafe(12)
         password_hash = hash_password_fn(generated_password)
 
         cursor.execute(
@@ -43,7 +64,6 @@ def init_db(hash_password_fn):
         )
         conn.commit()
 
-        # Print banner to stdout (docker logs)
         print("\n" + "=" * 60, flush=True)
         print("=== FIRST-RUN LOGIN CREDENTIALS ===", flush=True)
         print("=" * 60, flush=True)

@@ -4,6 +4,10 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    arp-scan \
+    nmap \
+    iproute2 \
+    procps \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -13,6 +17,6 @@ COPY . .
 
 RUN mkdir -p /app/data
 
-EXPOSE 8000
+EXPOSE 28080
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${WEBAPP_PORT:-28080}"]
