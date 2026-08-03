@@ -17,18 +17,28 @@ class IPRestrictionMiddleware(BaseHTTPMiddleware):
                 self.allowed_subnets.append(ipaddress.ip_network(net))
             except ValueError as e:
                 print(f"Warning: Invalid IP network in configuration '{net}': {e}", flush=True)
+        
+        # Security: only trust proxy headers if explicitly enabled AND request originates from a local proxy
+        self.trust_proxy_headers = os.getenv("TRUST_PROXY_HEADERS", "false").lower() in ("true", "1", "yes")
 
     async def dispatch(self, request: Request, call_next):
-        # Allow internal health checks without IP restriction
+        # Exclude internal health check endpoint
         if request.url.path == "/api/health":
             return await call_next(request)
 
-        # Check client IP
-        x_forwarded_for = request.headers.get("x-forwarded-for")
-        if x_forwarded_for:
-            client_ip_str = x_forwarded_for.split(",")[0].strip()
+        # Socket IP from kernel TCP connection state (un-spoofable by HTTP headers)
+        socket_ip_str = request.client.host if request.client else "127.0.0.1"
+
+        if self.trust_proxy_headers and socket_ip_str in ("127.0.0.1", "::1"):
+            # Only read X-Forwarded-For if explicitly enabled and connection comes from local proxy
+            x_forwarded_for = request.headers.get("x-forwarded-for")
+            if x_forwarded_for:
+                client_ip_str = x_forwarded_for.split(",")[0].strip()
+            else:
+                client_ip_str = socket_ip_str
         else:
-            client_ip_str = request.client.host if request.client else "127.0.0.1"
+            # Use raw TCP socket IP
+            client_ip_str = socket_ip_str
 
         try:
             client_ip = ipaddress.ip_address(client_ip_str)
@@ -42,7 +52,7 @@ class IPRestrictionMiddleware(BaseHTTPMiddleware):
         if not is_allowed:
             return JSONResponse(
                 status_code=status.HTTP_403_FORBIDDEN,
-                content={"detail": f"Forbidden: IP {client_ip_str} is not in allowed LAN/VPN subnets"}
+                content={"detail": f"Forbidden: Socket IP {client_ip_str} is not in allowed LAN/VPN subnets"}
             )
 
         return await call_next(request)
