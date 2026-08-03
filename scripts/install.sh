@@ -303,7 +303,7 @@ while true; do
         break
     fi
 
-    # Clean, safe container inspect health check without sudo prompting
+    # Clean, safe container inspect health check without stdout/stderr argument conflicts
     HEALTHY_COUNT="$(python3 -c "
 import subprocess
 containers = ['sentinel-prometheus', 'sentinel-node-exporter', 'sentinel-grafana', 'sentinel-uptime-kuma', 'sentinel-docker-socket-proxy', 'sentinel-webapp']
@@ -313,7 +313,7 @@ for c in containers:
     try:
         res = subprocess.run(
             docker_cmd + ['inspect', '--format', '{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}', c],
-            capture_output=True, text=True, stderr=subprocess.DEVNULL
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True
         )
         out = res.stdout.strip()
         if out:
