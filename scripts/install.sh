@@ -297,26 +297,32 @@ while true; do
         break
     fi
 
-    # Robust container inspect health check using python
+    # Clean, safe container inspect health check
     HEALTHY_COUNT="$(python3 -c "
 import subprocess
 containers = ['sentinel-prometheus', 'sentinel-node-exporter', 'sentinel-grafana', 'sentinel-uptime-kuma', 'sentinel-docker-socket-proxy', 'sentinel-webapp']
 count = 0
 for c in containers:
-    res = subprocess.run(['sudo', 'docker', 'inspect', '--format', '{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}', c], capture_output=True, text=True)
-    out = res.stdout.strip()
-    if out:
-        parts = out.split()
-        status = parts[0]
-        health = parts[1] if len(parts) > 1 else 'none'
-        if status == 'running' and health in ('healthy', 'none'):
-            count += 1
+    try:
+        res = subprocess.run(
+            ['docker', 'inspect', '--format', '{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}', c],
+            capture_output=True, text=True, stderr=subprocess.DEVNULL
+        )
+        out = res.stdout.strip()
+        if out:
+            parts = out.split()
+            status = parts[0]
+            health = parts[1] if len(parts) > 1 else 'none'
+            if status == 'running' and health in ('healthy', 'none'):
+                count += 1
+    except Exception:
+        pass
 print(count)
-" 2>/dev/null || echo 0)"
+" 2>/dev/null | tail -n 1)"
 
     HEALTHY_COUNT="$(echo "$HEALTHY_COUNT" | tr -d '\r\n\t ')"
 
-    if [[ "$HEALTHY_COUNT" =~ ^[0-9]+$ ]] && [[ "$HEALTHY_COUNT" -ge 6 ]]; then
+    if [[ "$HEALTHY_COUNT" =~ ^[0-9]+$ ]] && [ "$HEALTHY_COUNT" -ge 6 ]; then
         ALL_HEALTHY=true
         break
     fi
