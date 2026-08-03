@@ -141,6 +141,7 @@ services:
       - SCAN_INTERVAL=300
     volumes:
       - webapp_data:/app/data
+      - ../webapp/static:/app/static:ro
     depends_on:
       - docker-socket-proxy
     healthcheck:
