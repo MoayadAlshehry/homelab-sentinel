@@ -41,8 +41,6 @@ prompt_input() {
     local input_val=""
     if [[ -t 0 ]]; then
         read -rp "$prompt_text" input_val || true
-    elif [[ -c /dev/tty ]]; then
-        read -rp "$prompt_text" input_val < /dev/tty || true
     else
         echo "$prompt_text (non-interactive session, using default)"
     fi
