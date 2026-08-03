@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { parseApiError } from '../utils/formatError';
 
 export default function ForcePasswordChangeModal({ token, onCredentialsChanged }) {
   const [newUsername, setNewUsername] = useState('');
@@ -11,6 +12,11 @@ export default function ForcePasswordChangeModal({ token, onCredentialsChanged }
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (newUsername.trim().length < 3) {
+      setError('Username must be between 3 and 30 characters long');
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       setError('Passwords do not match');
@@ -32,19 +38,20 @@ export default function ForcePasswordChangeModal({ token, onCredentialsChanged }
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          new_username: newUsername,
+          new_username: newUsername.trim(),
           new_password: newPassword
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.detail || 'Failed to update credentials');
+        const errorMsg = parseApiError(data.detail, 'Failed to update credentials');
+        throw new Error(errorMsg);
       }
 
-      onCredentialsChanged(newUsername);
+      onCredentialsChanged(newUsername.trim());
     } catch (err) {
-      setError(err.message);
+      setError(typeof err.message === 'string' ? err.message : parseApiError(err, 'An unexpected error occurred'));
     } finally {
       setLoading(false);
     }
@@ -69,40 +76,46 @@ export default function ForcePasswordChangeModal({ token, onCredentialsChanged }
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
               New Permanent Username
             </label>
             <input
               type="text"
               required
+              minLength={3}
+              maxLength={30}
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
               placeholder="sentinel_admin"
               className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
             />
+            <p className="text-[11px] text-gray-500 mt-1">Username: 3–30 characters</p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
               New Strong Password
             </label>
             <input
               type="password"
               required
+              minLength={8}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="••••••••••••"
               className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
             />
+            <p className="text-[11px] text-gray-500 mt-1">Password: minimum 8 characters</p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
               Confirm New Password
             </label>
             <input
               type="password"
               required
+              minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••••••"

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Shield, Lock, User, KeyRound, AlertCircle } from 'lucide-react';
+import { Shield, User, KeyRound, AlertCircle } from 'lucide-react';
+import { parseApiError } from '../utils/formatError';
 
 export default function LoginModal({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
@@ -21,12 +22,12 @@ export default function LoginModal({ onLoginSuccess }) {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.detail || 'Invalid username or password');
+        throw new Error(parseApiError(data.detail, 'Invalid username or password'));
       }
 
       onLoginSuccess(data);
     } catch (err) {
-      setError(err.message);
+      setError(typeof err.message === 'string' ? err.message : parseApiError(err, 'An unexpected error occurred'));
     } finally {
       setLoading(false);
     }

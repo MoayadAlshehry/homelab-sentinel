@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Header, status
 from pydantic import BaseModel, Field
 from app.database import get_db
@@ -10,8 +11,8 @@ class LoginRequest(BaseModel):
     password: str
 
 class ChangeCredentialsRequest(BaseModel):
-    current_password: str
-    new_username: str = Field(..., min_length=3)
+    current_password: Optional[str] = None
+    new_username: str = Field(..., min_length=3, max_length=30)
     new_password: str = Field(..., min_length=8)
 
 def get_current_user(authorization: str = Header(None)):
@@ -75,12 +76,15 @@ def change_credentials(req: ChangeCredentialsRequest, current_user: dict = Depen
     cursor.execute("SELECT * FROM users WHERE username = ?", (current_user["username"],))
     user = cursor.fetchone()
 
-    if not user or not verify_password(req.current_password, user["password_hash"]):
-        conn.close()
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Current password is incorrect"
-        )
+    # If user is not in forced password change mode, current_password must be verified
+    is_first_run = bool(user["must_change_password"])
+    if not is_first_run:
+        if not req.current_password or not verify_password(req.current_password, user["password_hash"]):
+            conn.close()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is required and must be correct"
+            )
 
     if req.new_username != current_user["username"]:
         cursor.execute("SELECT id FROM users WHERE username = ?", (req.new_username,))

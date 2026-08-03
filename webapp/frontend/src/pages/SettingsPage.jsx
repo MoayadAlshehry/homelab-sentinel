@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Bell, Send, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { parseApiError } from '../utils/formatError';
 
 export default function SettingsPage({ token }) {
   const [settings, setSettings] = useState({
@@ -12,6 +13,7 @@ export default function SettingsPage({ token }) {
   const [telegramChatId, setTelegramChatId] = useState('');
   const [discordWebhookUrl, setDiscordWebhookUrl] = useState('');
 
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
@@ -64,10 +66,10 @@ export default function SettingsPage({ token }) {
         setDiscordWebhookUrl('');
         fetchSettings();
       } else {
-        setMessage({ type: 'error', text: data.detail || 'Failed to update settings' });
+        setMessage({ type: 'error', text: parseApiError(data.detail, 'Failed to update settings') });
       }
     } catch (e) {
-      setMessage({ type: 'error', text: e.message });
+      setMessage({ type: 'error', text: parseApiError(e, 'An unexpected error occurred') });
     } finally {
       setLoading(false);
     }
@@ -84,10 +86,10 @@ export default function SettingsPage({ token }) {
       if (res.ok) {
         setMessage({ type: 'success', text: data.message });
       } else {
-        setMessage({ type: 'error', text: data.detail || `Failed to send ${channel} test message` });
+        setMessage({ type: 'error', text: parseApiError(data.detail, `Failed to send ${channel} test message`) });
       }
     } catch (e) {
-      setMessage({ type: 'error', text: e.message });
+      setMessage({ type: 'error', text: parseApiError(e, 'An unexpected error occurred') });
     }
   };
 
@@ -95,6 +97,18 @@ export default function SettingsPage({ token }) {
     e.preventDefault();
     setLoading(true);
     setMessage({ type: '', text: '' });
+
+    if (newUsername.trim().length < 3) {
+      setMessage({ type: 'error', text: 'Username must be between 3 and 30 characters long.' });
+      setLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setMessage({ type: 'error', text: 'Password must be at least 8 characters long.' });
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/auth/change-credentials', {
@@ -104,7 +118,8 @@ export default function SettingsPage({ token }) {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          new_username: newUsername,
+          current_password: currentPassword,
+          new_username: newUsername.trim(),
           new_password: newPassword
         })
       });
@@ -112,13 +127,14 @@ export default function SettingsPage({ token }) {
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: 'success', text: 'Account credentials updated successfully!' });
+        setCurrentPassword('');
         setNewUsername('');
         setNewPassword('');
       } else {
-        setMessage({ type: 'error', text: data.detail || 'Failed to change credentials' });
+        setMessage({ type: 'error', text: parseApiError(data.detail, 'Failed to change credentials') });
       }
     } catch (e) {
-      setMessage({ type: 'error', text: e.message });
+      setMessage({ type: 'error', text: parseApiError(e, 'An unexpected error occurred') });
     } finally {
       setLoading(false);
     }
@@ -150,56 +166,56 @@ export default function SettingsPage({ token }) {
       {/* Alert Channels Card */}
       <div className="glass-card p-6 rounded-2xl border border-gray-800 space-y-6">
         <h3 className="text-base font-semibold text-white flex items-center gap-2 border-b border-gray-800 pb-3">
-          <Bell className="w-4 h-4 text-emerald-400" />
-          Notification Dispatch Channels
+          <Bell className="w-4 h-4 text-blue-400" />
+          Notification Destination Channels
         </h3>
 
-        <form onSubmit={handleSaveSettings} className="space-y-6">
-          {/* Telegram Settings */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-blue-400 uppercase tracking-wider">Telegram Bot Integration</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">
-                  Telegram Bot Token {settings.telegram_bot_token_masked && <span className="text-xs text-gray-500">({settings.telegram_bot_token_masked})</span>}
-                </label>
-                <input
-                  type="password"
-                  value={telegramToken}
-                  onChange={(e) => setTelegramToken(e.target.value)}
-                  placeholder="123456789:ABCdefGHIjkl..."
-                  className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Telegram Chat ID</label>
-                <input
-                  type="text"
-                  value={telegramChatId}
-                  onChange={(e) => setTelegramChatId(e.target.value)}
-                  placeholder="987654321"
-                  className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Discord Settings */}
-          <div className="space-y-4 pt-2">
-            <h4 className="text-sm font-semibold text-indigo-400 uppercase tracking-wider">Discord Webhook Integration</h4>
+        <form onSubmit={handleSaveSettings} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1">
-                Discord Webhook URL {settings.discord_webhook_url_masked && <span className="text-xs text-gray-500">({settings.discord_webhook_url_masked})</span>}
+                Telegram Bot Token
+                {settings.telegram_bot_token_masked && (
+                  <span className="text-gray-500 ml-2">(Current: {settings.telegram_bot_token_masked})</span>
+                )}
               </label>
               <input
                 type="password"
-                value={discordWebhookUrl}
-                onChange={(e) => setDiscordWebhookUrl(e.target.value)}
-                placeholder="https://discord.com/api/webhooks/..."
+                value={telegramToken}
+                onChange={(e) => setTelegramToken(e.target.value)}
+                placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
                 className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-blue-500"
               />
             </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1">
+                Telegram Chat ID
+              </label>
+              <input
+                type="text"
+                value={telegramChatId}
+                onChange={(e) => setTelegramChatId(e.target.value)}
+                placeholder="-100123456789"
+                className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">
+              Discord Webhook URL
+              {settings.discord_webhook_url_masked && (
+                <span className="text-gray-500 ml-2">(Current: {settings.discord_webhook_url_masked})</span>
+              )}
+            </label>
+            <input
+              type="text"
+              value={discordWebhookUrl}
+              onChange={(e) => setDiscordWebhookUrl(e.target.value)}
+              placeholder="https://discord.com/api/webhooks/..."
+              className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-blue-500"
+            />
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-gray-800">
@@ -240,29 +256,50 @@ export default function SettingsPage({ token }) {
         </h3>
 
         <form onSubmit={handleChangeCredentials} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">Current Password</label>
+            <input
+              type="password"
+              required
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Current password"
+              className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-yellow-500"
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">New Username</label>
+              <label className="block text-xs font-medium text-gray-400 mb-1">
+                New Username
+              </label>
               <input
                 type="text"
                 required
+                minLength={3}
+                maxLength={30}
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
                 placeholder="sentinel_admin"
                 className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-yellow-500"
               />
+              <p className="text-[11px] text-gray-500 mt-1">Username: 3–30 characters</p>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">New Password</label>
+              <label className="block text-xs font-medium text-gray-400 mb-1">
+                New Password
+              </label>
               <input
                 type="password"
                 required
+                minLength={8}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="••••••••••••"
                 className="w-full bg-gray-900/80 border border-gray-700/80 rounded-xl py-2 px-3.5 text-white text-xs focus:outline-none focus:border-yellow-500"
               />
+              <p className="text-[11px] text-gray-500 mt-1">Password: minimum 8 characters</p>
             </div>
           </div>
 
