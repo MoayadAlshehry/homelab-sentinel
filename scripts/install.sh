@@ -235,11 +235,14 @@ if [[ -n "$IP_CIDR" ]]; then
     LAN_SUBNET="$(python3 -c "import ipaddress; print(ipaddress.ip_network('$IP_CIDR', strict=False))" 2>/dev/null || echo "")"
 fi
 
+LAN_SUBNET="$(echo "$LAN_SUBNET" | tr -d '\r\n\t ')"
+
 if [[ -n "$LAN_SUBNET" && -n "$DEFAULT_IFACE" ]]; then
     log_success "Detected LAN Subnet: ${BOLD}${LAN_SUBNET}${RESET} (via interface ${DEFAULT_IFACE})"
 else
     log_warn "Could not automatically detect active LAN subnet from default route interface."
     prompt_input "Enter your LAN subnet in CIDR notation (e.g. 192.168.1.0/24): " user_subnet
+    user_subnet="$(echo "$user_subnet" | tr -d '\r\n\t ')"
     if [[ -n "$user_subnet" ]]; then
         LAN_SUBNET="$user_subnet"
         log_info "Using user-entered LAN subnet: $LAN_SUBNET"
@@ -256,14 +259,14 @@ if command -v ufw &>/dev/null; then
     if echo "$UFW_STATUS" | grep -iq "active"; then
         log_info "UFW Firewall is active. Applying scoped rules for subnet ${LAN_SUBNET} across ports: ${PORTS[*]}..."
         for port in "${PORTS[@]}"; do
-            sudo ufw allow from "$LAN_SUBNET" to any port "$port" proto tcp comment "Homelab Sentinel Port $port" &>/dev/null || true
+            sudo ufw allow from "$LAN_SUBNET" to any port "$port" proto tcp comment "Homelab Sentinel Port $port" || true
         done
-        sudo ufw reload &>/dev/null || true
+        sudo ufw reload || true
         log_success "UFW firewall rules applied for subnet $LAN_SUBNET"
     else
         log_info "UFW is installed but currently inactive. Staging scoped rules for subnet ${LAN_SUBNET}..."
         for port in "${PORTS[@]}"; do
-            sudo ufw allow from "$LAN_SUBNET" to any port "$port" proto tcp comment "Homelab Sentinel Port $port" &>/dev/null || true
+            sudo ufw allow from "$LAN_SUBNET" to any port "$port" proto tcp comment "Homelab Sentinel Port $port" || true
         done
         log_success "UFW firewall rules staged for subnet $LAN_SUBNET"
     fi
