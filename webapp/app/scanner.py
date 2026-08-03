@@ -25,9 +25,16 @@ def get_lan_subnet():
 def run_lan_scan():
     devices = []
     
-    # 1. Primary L2 Scanner: arp-scan (resolves real MACs and real IEEE OUI vendors)
+    # 1. Primary L2 Scanner: arp-scan with explicit OUI file path
     try:
-        cmd = ["arp-scan", "--localnet", f"--interface={INTERFACE}", "--ignoredups", "-q"]
+        cmd = [
+            "arp-scan",
+            "--localnet",
+            f"--interface={INTERFACE}",
+            "--ouifile=/usr/share/arp-scan/ieee-oui.txt",
+            "--ignoredups",
+            "-q"
+        ]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
         if res.returncode == 0:
             for line in res.stdout.splitlines():
