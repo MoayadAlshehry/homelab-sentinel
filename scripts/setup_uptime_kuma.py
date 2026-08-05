@@ -25,46 +25,6 @@ def get_default_gateway():
 
 MONITORS = [
     {
-        "name": "Homelab Sentinel WebApp",
-        "type": "http",
-        "url": "http://127.0.0.1:28080/api/health",
-        "hostname": "",
-        "dns_resolve_server": "",
-        "dns_resolve_type": "",
-        "port": None,
-        "interval": 20
-    },
-    {
-        "name": "Grafana Dashboard",
-        "type": "http",
-        "url": "http://127.0.0.1:23000/api/health",
-        "hostname": "",
-        "dns_resolve_server": "",
-        "dns_resolve_type": "",
-        "port": None,
-        "interval": 20
-    },
-    {
-        "name": "Prometheus Metrics",
-        "type": "http",
-        "url": "http://127.0.0.1:29090/-/healthy",
-        "hostname": "",
-        "dns_resolve_server": "",
-        "dns_resolve_type": "",
-        "port": None,
-        "interval": 20
-    },
-    {
-        "name": "Home Gateway Router",
-        "type": "ping",
-        "url": "",
-        "hostname": get_default_gateway(),
-        "dns_resolve_server": "",
-        "dns_resolve_type": "",
-        "port": None,
-        "interval": 20
-    },
-    {
         "name": "Cloudflare DNS",
         "type": "dns",
         "url": "",
