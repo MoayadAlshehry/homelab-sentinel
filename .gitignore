@@ -1,0 +1,27 @@
+# Environment & Secrets
+.env
+*.env
+
+# Databases & Volumes
+*.db
+*.sqlite
+/volumes/
+
+# Python & Node Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Build & Dist Artifacts
+dist/
+webapp/frontend/dist/
+webapp/static/assets/
+webapp/static/index.html
+
+# OS / Editor Files
+.DS_Store
+.vscode/
+.idea/

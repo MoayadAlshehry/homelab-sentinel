@@ -1,0 +1,199 @@
+name: homelab-sentinel
+
+networks:
+  sentinel-net:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  uptime_kuma_data:
+  webapp_data:
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sentinel-prometheus
+    restart: unless-stopped
+    networks:
+      - sentinel-net
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-29090}:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=7d'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:9090/-/healthy || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: sentinel-node-exporter
+    restart: unless-stopped
+    networks:
+      - sentinel-net
+    ports:
+      - "127.0.0.1:${NODE_EXPORTER_PORT:-29100}:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:9100/ || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+  grafana:
+    image: grafana/grafana-oss:11.4.0
+    container_name: sentinel-grafana
+    restart: unless-stopped
+    networks:
+      - sentinel-net
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-23000}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - "GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Error: GRAFANA_ADMIN_PASSWORD environment variable is required}"
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
+      - GF_LOG_LEVEL=warn
+      - GOMAXPROCS=1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: sentinel-uptime-kuma
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PORT=${UPTIME_KUMA_PORT:-23001}
+    volumes:
+      - uptime_kuma_data:/app/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sI http://127.0.0.1:${UPTIME_KUMA_PORT:-23001}/ | grep -q 'HTTP/' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    container_name: sentinel-docker-socket-proxy
+    restart: unless-stopped
+    networks:
+      - sentinel-net
+    ports:
+      - "127.0.0.1:2375:2375"
+    environment:
+      - CONTAINERS=1
+      - INFO=1
+      - POST=1
+      - STATS=1
+      - EXEC=1
+      - VOLUMES=1
+      - NETWORKS=1
+      - IMAGES=1
+      - BUILD=0
+      - SWARM=0
+      - SYSTEM=0
+      - PLUGINS=0
+      - NODES=0
+      - SERVICES=0
+      - TASKS=0
+      - SECRETS=0
+      - CONFIGS=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  webapp:
+    build:
+      context: ../webapp
+      dockerfile: Dockerfile
+    image: sentinel-webapp:local
+    container_name: sentinel-webapp
+    restart: unless-stopped
+    network_mode: host
+    pid: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WEBAPP_PORT=${WEBAPP_PORT:-28080}
+      - "SECRET_KEY=${SECRET_KEY:?Error: SECRET_KEY environment variable is required}"
+      - ALLOWED_IP_NETWORKS=${ALLOWED_IP_NETWORKS:-10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,127.0.0.0/8,::1/128}
+      - DOCKER_PROXY_URL=http://127.0.0.1:2375
+      - PROMETHEUS_URL=http://127.0.0.1:29090
+      - UPTIME_KUMA_URL=http://127.0.0.1:23001
+      - SCAN_INTERFACE=${SCAN_INTERFACE:-auto}
+      - SCAN_INTERVAL=300
+      - TZ=Asia/Riyadh
+    volumes:
+      - webapp_data:/app/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    depends_on:
+      - docker-socket-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:28080/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s

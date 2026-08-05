@@ -1,0 +1,38 @@
+groups:
+  - name: homelab_sentinel_alerts
+    rules:
+      - alert: HostUnreachable
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host or target {{ $labels.instance }} unreachable"
+          description: "Target {{ $labels.instance }} has been down for more than 1 minute."
+
+      - alert: HighHostTemperature
+        expr: node_thermal_zone_temp{type="cpu-thermal"} > 75
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Host SoC Temperature High"
+          description: "SoC Temperature on {{ $labels.instance }} is currently at {{ $value }}°C (threshold: >75°C)."
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Disk Usage on {{ $labels.instance }}"
+          description: "Disk usage on mountpoint / is currently at {{ $value | printf \"%.2f\" }}% (threshold: >85%)."
+
+      - alert: SustainedHighCPUUsage
+        expr: (1 - avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Sustained High CPU Usage on {{ $labels.instance }}"
+          description: "CPU usage on {{ $labels.instance }} has been above 90% for 5 minutes (current: {{ $value | printf \"%.2f\" }}%)."

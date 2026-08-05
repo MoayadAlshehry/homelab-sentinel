@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --graphite: #161B22;
+  --graphite-surface: #1D2430;
+  --graphite-border: #2A3341;
+  --signal-green: #00C853;
+  --green-glow: #69F0AE;
+  --mint-bg: #E8FDF0;
+
+  /* shadcn sidebar variables */
+  --sidebar-background: #1D2430;
+  --sidebar-foreground: #9CA3AF;
+  --sidebar-primary: #00C853;
+  --sidebar-primary-foreground: #161B22;
+  --sidebar-accent: rgba(0, 200, 83, 0.12);
+  --sidebar-accent-foreground: #00C853;
+  --sidebar-border: #2A3341;
+  --sidebar-ring: #00C853;
+  --sidebar-width: 14rem;
+  --sidebar-width-icon: 3.5rem;
+}
+
+@layer base {
+  body {
+    background-color: #161B22;
+    color: #F3F4F6;
+  }
+
+  /* Muted placeholder text color */
+  ::placeholder,
+  input::placeholder,
+  textarea::placeholder,
+  select::placeholder {
+    color: rgba(0, 200, 83, 0.35) !important;
+    opacity: 1 !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #161B22;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2A3341;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00C853;
+  }
+}
+
+.glass-card {
+  background: #1D2430;
+  border: 1px solid #2A3341;
+}
+
+.glass-card-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-card-hover:hover {
+  border-color: #00C853;
+  box-shadow: 0 4px 20px -2px rgba(105, 240, 174, 0.25);
+}
+
+/* ==========================================================================
+   Light Mode Palette Overrides
+   ========================================================================== */
+html.light {
+  --graphite: #F1F5F9;
+  --graphite-surface: #FFFFFF;
+  --graphite-border: #E2E8F0;
+
+  --sidebar-background: #FFFFFF;
+  --sidebar-foreground: #334155;
+  --sidebar-primary: #00C853;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(0, 200, 83, 0.12);
+  --sidebar-accent-foreground: #00C853;
+  --sidebar-border: #E2E8F0;
+}
+
+html.light body {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+}
+
+/* Cards, panels, & table shells */
+html.light .bg-\[\#1D2430\] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Page background & main container */
+html.light .group\/sidebar-wrapper,
+html.light main,
+html.light body,
+html.light .bg-\[\#0B0E14\],
+html.light .bg-\[\#161B22\] {
+  background-color: #F1F5F9 !important;
+}
+
+/* Top Header Bar */
+html.light header.bg-\[\#161B22\]\/90 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Sub-panels, hover states, & mobile card inner rows */
+html.light .bg-\[\#161B22\]\/50,
+html.light .bg-\[\#1D2430\]\/60,
+html.light .bg-\[\#1D2430\]\/40,
+html.light .bg-\[\#161B22\]\/80,
+html.light .bg-\[\#161B22\]\/60 {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Inputs, selects, textareas */
+html.light input[type="text"],
+html.light input[type="password"],
+html.light select,
+html.light textarea {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+/* Borders */
+html.light .border-\[\#2A3341\] {
+  border-color: #E2E8F0 !important;
+}
+
+html.light .border-\[\#2A3341\]\/60,
+html.light .border-\[\#2A3341\]\/40 {
+  border-color: #F1F5F9 !important;
+}
+
+/* Typography Contrast System */
+html.light .text-white {
+  color: #0F172A !important;
+}
+
+html.light .text-gray-200,
+html.light .text-gray-300 {
+  color: #334155 !important;
+}
+
+html.light .text-gray-400,
+html.light .text-gray-500 {
+  color: #64748B !important;
+}
+
+html.light .text-gray-600 {
+  color: #94A3B8 !important;
+}
+
+/* Sidebar Menu Items */
+html.light button[data-sidebar="menu-button"],
+html.light button[data-sidebar="trigger"] {
+  color: #334155 !important;
+}
+
+html.light button[data-sidebar="menu-button"]:hover,
+html.light button[data-sidebar="trigger"]:hover {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+}
+
+html.light button[data-sidebar="menu-button"][data-active="true"] {
+  background-color: rgba(0, 200, 83, 0.12) !important;
+  color: #00C853 !important;
+}
+
+/* Secondary, Utility, & Action Buttons in Light Mode */
+html.light .bg-\[\#2A3341\],
+html.light .bg-\[\#374151\],
+html.light button.bg-\[\#2A3341\],
+html.light button.bg-\[\#374151\] {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  color: #334155 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .hover\:bg-\[\#374151\]:hover,
+html.light .hover\:bg-\[\#2A3341\]:hover,
+html.light .hover\:bg-\[\#2A3341\]\/60:hover,
+html.light .hover\:bg-\[\#2A3341\]\/50:hover,
+html.light button.bg-\[\#2A3341\]:hover,
+html.light button.bg-\[\#374151\]:hover {
+  background-color: #F1F5F9 !important;
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+}
+
+html.light .border-\[\#374151\],
+html.light .border-\[\#2A3341\] {
+  border-color: #CBD5E1 !important;
+}
+
+/* Green Badge & Tinted Action Buttons in Light Mode */
+html.light .bg-\[\#00C853\]\/20,
+html.light .bg-\[\#00C853\]\/15,
+html.light .bg-\[\#00C853\]\/10 {
+  background-color: rgba(0, 200, 83, 0.12) !important;
+  border-color: rgba(0, 200, 83, 0.3) !important;
+}
+
+html.light .text-\[\#00C853\] {
+  color: #008E3A !important;
+}
+
+/* Keyboard Shortcut Badges (<kbd>) in Light Mode */
+html.light kbd,
+html.light .bg-\[\#161B22\] kbd {
+  background-color: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+  color: #475569 !important;
+}
+
+/* Glass cards & hover effects */
+html.light .glass-card {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .glass-card-hover:hover {
+  border-color: #00C853 !important;
+  box-shadow: 0 4px 12px -2px rgba(0, 200, 83, 0.2) !important;
+}
