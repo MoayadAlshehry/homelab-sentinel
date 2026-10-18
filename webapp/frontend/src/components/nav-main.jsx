@@ -24,7 +24,7 @@ export function NavMain({ items, activeTab, setActiveTab }) {
                 if (setOpenMobile) setOpenMobile(false)
               }}
             >
-              {Icon && <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-[#00C853]' : 'text-gray-400'}`} />}
+              {Icon && <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-signal-green' : 'text-gray-400'}`} />}
               <span>{item.title}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

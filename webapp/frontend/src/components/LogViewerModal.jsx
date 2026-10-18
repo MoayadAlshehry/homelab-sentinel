@@ -29,7 +29,7 @@ export default function LogViewerModal({ containerName, token, onClose }) {
   }, [containerName]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4">
       <div className="glass-card w-full max-w-4xl h-[80vh] flex flex-col rounded-2xl border border-gray-800 shadow-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between bg-gray-900/60">
           <div className="flex items-center space-x-3">

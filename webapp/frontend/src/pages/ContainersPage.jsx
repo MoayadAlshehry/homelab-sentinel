@@ -97,7 +97,7 @@ export default function ContainersPage({ token, initialFilter = '' }) {
           type="checkbox"
           checked={table.getIsAllPageRowsSelected()}
           onChange={table.getToggleAllPageRowsSelectedHandler()}
-          className="accent-[#00C853] rounded"
+          className="accent-signal-green rounded-sm"
         />
       ),
       cell: ({ row }) => (
@@ -106,7 +106,7 @@ export default function ContainersPage({ token, initialFilter = '' }) {
           checked={row.getIsSelected()}
           onChange={row.getToggleSelectedHandler()}
           onClick={(e) => e.stopPropagation()}
-          className="accent-[#00C853] rounded"
+          className="accent-signal-green rounded-sm"
         />
       ),
       enableSorting: false,
@@ -118,7 +118,7 @@ export default function ContainersPage({ token, initialFilter = '' }) {
         const c = row.original;
         return (
           <div className="flex items-center gap-2.5 font-bold text-white">
-            <Server className="w-4 h-4 text-[#00C853] flex-shrink-0" />
+            <Server className="w-4 h-4 text-signal-green shrink-0" />
             <span>{c.name}</span>
           </div>
         );
@@ -133,10 +133,10 @@ export default function ContainersPage({ token, initialFilter = '' }) {
         return (
           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
             isRunning 
-              ? 'bg-[#00C853]/15 text-[#00C853] border border-[#00C853]/30' 
+              ? 'bg-signal-green/15 text-signal-green border border-signal-green/30'
               : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
           }`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-[#00C853] animate-pulse' : 'bg-rose-500'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-signal-green animate-pulse' : 'bg-rose-500'}`} />
             {state ? state.toUpperCase() : 'UNKNOWN'}
           </span>
         );
@@ -155,14 +155,14 @@ export default function ContainersPage({ token, initialFilter = '' }) {
             </span>
             <button
               onClick={(e) => handleCopyImage(img, e)}
-              className="p-1 hover:bg-[#2A3341] text-gray-500 hover:text-white rounded transition-all"
+              className="p-1 hover:bg-graphite-border text-gray-500 hover:text-white rounded-sm transition-all"
               title={img}
             >
-              {isCopied ? <Check className="w-3 h-3 text-[#00C853]" /> : <Copy className="w-3 h-3" />}
+              {isCopied ? <Check className="w-3 h-3 text-signal-green" /> : <Copy className="w-3 h-3" />}
             </button>
-            {isCopied && <span className="text-[10px] font-bold text-[#00C853]">Copied!</span>}
+            {isCopied && <span className="text-[10px] font-bold text-signal-green">Copied!</span>}
             {row.original.update_available && (
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30 uppercase tracking-wider">
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-sm bg-sky-500/20 text-sky-400 border border-sky-500/30 uppercase tracking-wider">
                 Update Available
               </span>
             )}
@@ -201,7 +201,7 @@ export default function ContainersPage({ token, initialFilter = '' }) {
               className={`p-1.5 rounded-lg font-bold text-xs transition-colors ${
                 isRunning 
                   ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20' 
-                  : 'bg-[#00C853]/10 hover:bg-[#00C853]/20 text-[#00C853] border border-[#00C853]/20'
+                  : 'bg-signal-green/10 hover:bg-signal-green/20 text-signal-green border border-signal-green/20'
               }`}
               title={isRunning ? "Stop Container" : "Start Container"}
             >
@@ -228,7 +228,7 @@ export default function ContainersPage({ token, initialFilter = '' }) {
                 e.stopPropagation();
                 setSelectedLogsContainer(c.name);
               }}
-              className="p-1.5 bg-[#2A3341] hover:bg-sky-500/20 hover:text-sky-400 text-gray-300 rounded-lg transition-colors"
+              className="p-1.5 bg-graphite-border hover:bg-sky-500/20 hover:text-sky-400 text-gray-300 rounded-lg transition-colors"
               title="View Container Logs"
             >
               <FileText className="w-3.5 h-3.5" />
@@ -247,10 +247,10 @@ export default function ContainersPage({ token, initialFilter = '' }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-3">
-            <Server className="w-5 h-5 text-[#00C853]" />
+            <Server className="w-5 h-5 text-signal-green" />
             Docker Container Management
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#1D2430] border border-[#2A3341] text-gray-300 flex items-center gap-1.5">
-              <span className="text-[#00C853]">{runningCount} Running</span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-graphite-surface border border-graphite-border text-gray-300 flex items-center gap-1.5">
+              <span className="text-signal-green">{runningCount} Running</span>
               <span>/</span>
               <span className="text-rose-400">{stoppedCount} Stopped</span>
             </span>
@@ -260,22 +260,22 @@ export default function ContainersPage({ token, initialFilter = '' }) {
 
         <button
           onClick={fetchContainers}
-          className="px-4 py-2 bg-[#2A3341] hover:bg-[#374151] text-gray-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 border border-[#374151]"
+          className="px-4 py-2 bg-graphite-border hover:bg-[#374151] text-gray-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 border border-[#374151]"
         >
-          <RotateCw className="w-3.5 h-3.5 text-[#00C853]" />
+          <RotateCw className="w-3.5 h-3.5 text-signal-green" />
           Refresh Containers
         </button>
       </div>
 
       {(Object.values(actionLoading).some(Boolean) || !!bulkLoading) && (
-        <div className="w-full bg-[#161B22] h-1 rounded-full overflow-hidden border border-[#2A3341]">
-          <div className="bg-[#00C853] h-full w-full animate-pulse" />
+        <div className="w-full bg-graphite h-1 rounded-full overflow-hidden border border-graphite-border">
+          <div className="bg-signal-green h-full w-full animate-pulse" />
         </div>
       )}
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[#00C853]" />
+          <Loader2 className="w-8 h-8 animate-spin text-signal-green" />
         </div>
       ) : (
         <DataTable
@@ -284,11 +284,11 @@ export default function ContainersPage({ token, initialFilter = '' }) {
           initialSearch={initialFilter}
           searchPlaceholder="Search container name, status, image..."
           bulkActions={(selectedRows) => (
-            <div className="flex items-center gap-1.5 bg-[#161B22] p-1 rounded-xl border border-[#2A3341]">
+            <div className="flex items-center gap-1.5 bg-graphite p-1 rounded-xl border border-graphite-border">
               <button
                 disabled={!!bulkLoading}
                 onClick={() => handleBulkAction('start', selectedRows)}
-                className="px-2.5 py-1 bg-[#00C853]/20 hover:bg-[#00C853]/30 text-[#00C853] border border-[#00C853]/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1 disabled:opacity-50"
+                className="px-2.5 py-1 bg-signal-green/20 hover:bg-signal-green/30 text-signal-green border border-signal-green/30 rounded-lg text-xs font-bold transition-all flex items-center gap-1 disabled:opacity-50"
               >
                 {bulkLoading === 'start' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
                 Start Selected

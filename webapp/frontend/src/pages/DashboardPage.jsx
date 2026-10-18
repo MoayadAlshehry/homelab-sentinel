@@ -138,17 +138,17 @@ export default function DashboardPage({ token, onNavigate }) {
   if (loading && !sysMetrics) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <Loader2 className="w-10 h-10 text-[#00C853] animate-spin" />
+        <Loader2 className="w-10 h-10 text-signal-green animate-spin" />
         <p className="text-sm text-gray-400 font-medium">Initializing Homelab Sentinel Telemetry Engine...</p>
       </div>
     );
   }
 
   if (!sysMetrics) {
-    return <div role="alert" className="rounded-2xl border border-amber-500/40 bg-[#1D2430] p-6 space-y-3">
+    return <div role="alert" className="rounded-2xl border border-amber-500/40 bg-graphite-surface p-6 space-y-3">
       <h2 className="text-xl font-semibold text-white">Telemetry unavailable</h2>
       <p className="text-sm text-gray-300">{refreshError || 'No system metrics are available from the configured service.'}</p>
-      <button className="rounded-lg bg-[#00C853] px-4 py-2 text-sm font-semibold text-black" onClick={fetchData}>Retry connection</button>
+      <button className="rounded-lg bg-signal-green px-4 py-2 text-sm font-semibold text-black" onClick={fetchData}>Retry connection</button>
     </div>;
   }
   const temp = sysMetrics.temperature_c ?? 0;
@@ -162,7 +162,7 @@ export default function DashboardPage({ token, onNavigate }) {
     <div className="space-y-8">
       {refreshError && <div role="alert" className="rounded-xl border border-amber-500/40 p-4 text-sm text-amber-200">{refreshError}</div>}
       {/* Header Banner */}
-      <div className="bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
+      <div className="bg-graphite-surface p-6 rounded-2xl border border-graphite-border flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
         <div className="flex-1">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             Host System Overview
@@ -173,18 +173,18 @@ export default function DashboardPage({ token, onNavigate }) {
         {/* Stack Status Indicator Card (Clickable to Containers) */}
         <div
           onClick={() => onNavigate && onNavigate('containers')}
-          className="flex items-center gap-3 bg-[#161B22] px-4 py-3 rounded-xl border border-[#2A3341] hover:border-[#00C853] cursor-pointer group transition-all"
+          className="flex items-center gap-3 bg-graphite px-4 py-3 rounded-xl border border-graphite-border hover:border-signal-green cursor-pointer group transition-all"
         >
-          <div className="p-2 bg-[#00C853]/10 text-[#00C853] rounded-lg border border-[#00C853]/20 group-hover:scale-110 transition-transform">
+          <div className="p-2 bg-signal-green/10 text-signal-green rounded-lg border border-signal-green/20 group-hover:scale-110 transition-transform">
             <Server className="w-5 h-5" />
           </div>
           <div>
             <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1">
               Stack Status
-              <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-[#00C853] transition-colors" />
+              <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-signal-green transition-colors" />
             </div>
             <div className="text-xs text-gray-300 font-medium">
-              <span className="text-[#00C853] font-bold">{activeContainers}</span>/{totalContainers} Services Running
+              <span className="text-signal-green font-bold">{activeContainers}</span>/{totalContainers} Services Running
             </div>
           </div>
         </div>
@@ -195,26 +195,26 @@ export default function DashboardPage({ token, onNavigate }) {
         {/* Services Health Card */}
         <div 
           onClick={() => onNavigate && onNavigate('monitoring')}
-          className="bg-[#1D2430] glass-card-hover p-6 rounded-2xl border border-[#2A3341] cursor-pointer group"
+          className="bg-graphite-surface glass-card-hover p-6 rounded-2xl border border-graphite-border cursor-pointer group"
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Services Health</span>
-            <div className="p-2.5 bg-[#00C853]/10 text-[#00C853] rounded-xl border border-[#00C853]/20 group-hover:scale-110 transition-transform">
+            <div className="p-2.5 bg-signal-green/10 text-signal-green rounded-xl border border-signal-green/20 group-hover:scale-110 transition-transform">
               <Activity className="w-5 h-5" />
             </div>
           </div>
           <p className="text-2xl font-bold text-white flex items-center justify-between">
             <span>{upMonitors}/{totalMonitors} UP</span>
-            <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-[#00C853] transition-colors" />
+            <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-signal-green transition-colors" />
           </p>
-          <p className="text-xs text-[#00C853] mt-1 font-medium flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#00C853] animate-pulse"></span>
+          <p className="text-xs text-signal-green mt-1 font-medium flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-signal-green animate-pulse"></span>
             Monitor status from Uptime Kuma
           </p>
         </div>
 
         {/* Temperature Card */}
-        <div className="bg-[#1D2430] glass-card-hover p-6 rounded-2xl border border-[#2A3341]">
+        <div className="bg-graphite-surface glass-card-hover p-6 rounded-2xl border border-graphite-border">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">SoC Temperature</span>
             <div className="p-2.5 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
@@ -222,25 +222,25 @@ export default function DashboardPage({ token, onNavigate }) {
             </div>
           </div>
           <p className="text-2xl font-bold text-white">{temp}°C</p>
-          <p className="text-xs text-[#00C853] mt-1 flex items-center gap-1 font-medium">
+          <p className="text-xs text-signal-green mt-1 flex items-center gap-1 font-medium">
             <span>Normal Range (&lt; 75°C threshold)</span>
           </p>
         </div>
 
         {/* CPU Card */}
-        <div className="bg-[#1D2430] glass-card-hover p-6 rounded-2xl border border-[#2A3341]">
+        <div className="bg-graphite-surface glass-card-hover p-6 rounded-2xl border border-graphite-border">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">CPU Usage</span>
-            <div className="p-2.5 bg-[#00C853]/10 text-[#00C853] rounded-xl border border-[#00C853]/20">
+            <div className="p-2.5 bg-signal-green/10 text-signal-green rounded-xl border border-signal-green/20">
               <Cpu className="w-5 h-5" />
             </div>
           </div>
           <p className="text-2xl font-bold text-white">{cpu}%</p>
-          <p className="text-xs text-[#00C853] mt-1 font-medium">4 Cores Cortex-A76 @ 2.4GHz</p>
+          <p className="text-xs text-signal-green mt-1 font-medium">4 Cores Cortex-A76 @ 2.4GHz</p>
         </div>
 
         {/* RAM Card */}
-        <div className="bg-[#1D2430] glass-card-hover p-6 rounded-2xl border border-[#2A3341]">
+        <div className="bg-graphite-surface glass-card-hover p-6 rounded-2xl border border-graphite-border">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">RAM Memory</span>
             <div className="p-2.5 bg-[#0EA5E9]/10 text-[#0EA5E9] rounded-xl border border-[#0EA5E9]/20">
@@ -255,7 +255,7 @@ export default function DashboardPage({ token, onNavigate }) {
       </div>
 
       {/* Storage Section */}
-      <div className="bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] shadow-xl">
+      <div className="bg-graphite-surface p-6 rounded-2xl border border-graphite-border shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold text-white flex items-center gap-2">
             <HardDrive className="w-5 h-5 text-[#0EA5E9]" />
@@ -266,16 +266,16 @@ export default function DashboardPage({ token, onNavigate }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {disks.map((d) => (
-            <div key={d.mountpoint} className="p-4 bg-[#161B22] rounded-xl border border-[#2A3341] space-y-2">
+            <div key={d.mountpoint} className="p-4 bg-graphite rounded-xl border border-graphite-border space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-mono text-[#0EA5E9] font-bold">{d.mountpoint}</span>
                 <span className="text-gray-400 font-mono text-[11px]">{d.device} ({d.fstype})</span>
               </div>
               <p className="text-lg font-bold text-white">{d.used_gb} GB / {d.total_gb} GB</p>
-              <div className="w-full bg-[#1D2430] rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-graphite-surface rounded-full h-2 overflow-hidden">
                 <div 
                   className={`h-full rounded-full transition-all duration-500 ${
-                    d.used_pct > 85 ? 'bg-rose-500' : d.used_pct > 70 ? 'bg-amber-500' : 'bg-[#00C853]'
+                    d.used_pct > 85 ? 'bg-rose-500' : d.used_pct > 70 ? 'bg-amber-500' : 'bg-signal-green'
                   }`} 
                   style={{ width: `${Math.min(100, d.used_pct)}%` }}
                 ></div>
@@ -292,27 +292,27 @@ export default function DashboardPage({ token, onNavigate }) {
       {/* Main Charts & Feed Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Metric Chart */}
-        <div className="lg:col-span-2 bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-graphite-surface p-6 rounded-2xl border border-graphite-border shadow-xl flex flex-col justify-between">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <h3 className="text-base font-semibold text-white flex items-center gap-2">
                 Performance Telemetry History
-                {fetchingHistory && <RefreshCw className="w-3.5 h-3.5 text-[#00C853] animate-spin" />}
+                {fetchingHistory && <RefreshCw className="w-3.5 h-3.5 text-signal-green animate-spin" />}
               </h3>
               <p className="text-xs text-gray-400">
                 {timeRange === 'live' ? 'Live Prometheus stream (2s refresh)' : `Prometheus 7-day TSDB archive (${timeRange.toUpperCase()} view)`}
               </p>
             </div>
 
-            <div className="flex items-center space-x-1 p-1 bg-[#161B22] rounded-xl border border-[#2A3341]">
+            <div className="flex items-center space-x-1 p-1 bg-graphite rounded-xl border border-graphite-border">
               {['live', '3h', '24h', '7d'].map((rangeKey) => (
                 <button
                   key={rangeKey}
                   onClick={() => setTimeRange(rangeKey)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     timeRange === rangeKey
-                      ? 'bg-[#00C853] text-[#161B22] shadow-md shadow-[#00C853]/30'
-                      : 'text-gray-400 hover:text-white hover:bg-[#2A3341]'
+                      ? 'bg-signal-green text-graphite shadow-md shadow-[#00C853]/30'
+                      : 'text-gray-400 hover:text-white hover:bg-graphite-border'
                   }`}
                 >
                   {rangeKey === 'live' ? 'Live' : rangeKey.toUpperCase()}
@@ -322,8 +322,8 @@ export default function DashboardPage({ token, onNavigate }) {
           </div>
 
           <div className="flex items-center justify-end space-x-4 text-xs font-semibold mb-3">
-            <span className="flex items-center gap-1.5 text-[#00C853]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#00C853]"></span> CPU % (Green)
+            <span className="flex items-center gap-1.5 text-signal-green">
+              <span className="w-2.5 h-2.5 rounded-full bg-signal-green"></span> CPU % (Green)
             </span>
             <span className="flex items-center gap-1.5 text-rose-400">
               <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Temp (°C) (Red)
@@ -362,10 +362,10 @@ export default function DashboardPage({ token, onNavigate }) {
         </div>
 
         {/* Live Event & Failure Feed */}
-        <div className="bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] shadow-xl flex flex-col">
+        <div className="bg-graphite-surface p-6 rounded-2xl border border-graphite-border shadow-xl flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-semibold text-white flex items-center gap-2">
-              <Radio className="w-4 h-4 text-[#69F0AE] animate-pulse" />
+              <Radio className="w-4 h-4 text-signal-glow animate-pulse" />
               Event & Failure Feed
             </h3>
             <span className="text-xs text-gray-400">Real-time</span>
@@ -376,8 +376,8 @@ export default function DashboardPage({ token, onNavigate }) {
               <div className="text-center py-8 text-xs text-gray-500">No events recorded yet</div>
             ) : (
               events.slice(0, 7).map((ev) => (
-                <div key={ev.id} className="p-3 bg-[#161B22] rounded-xl border border-[#2A3341] text-xs flex items-start gap-2.5">
-                  <div className={`mt-0.5 p-1 rounded-md ${ev.event_type === 'JOINED' ? 'bg-[#00C853]/10 text-[#00C853]' : 'bg-rose-500/10 text-rose-400'}`}>
+                <div key={ev.id} className="p-3 bg-graphite rounded-xl border border-graphite-border text-xs flex items-start gap-2.5">
+                  <div className={`mt-0.5 p-1 rounded-md ${ev.event_type === 'JOINED' ? 'bg-signal-green/10 text-signal-green' : 'bg-rose-500/10 text-rose-400'}`}>
                     <Activity className="w-3.5 h-3.5" />
                   </div>
                   <div className="flex-1 min-w-0">

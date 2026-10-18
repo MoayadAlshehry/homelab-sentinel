@@ -76,7 +76,7 @@ export default function DataTable({
             value={globalFilter ?? ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 sm:py-2 pl-9 pr-4 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00C853] transition-colors min-h-[44px] sm:min-h-0"
+            className="w-full bg-graphite border border-graphite-border rounded-xl py-2.5 sm:py-2 pl-9 pr-4 text-xs text-white placeholder-gray-500 focus:outline-hidden focus:border-signal-green transition-colors min-h-[44px] sm:min-h-0"
           />
         </div>
 
@@ -92,15 +92,15 @@ export default function DataTable({
           <div className="relative ml-auto sm:ml-0">
             <button
               onClick={() => setShowColumnDropdown(!showColumnDropdown)}
-              className="px-3.5 py-2.5 sm:py-2 bg-[#161B22] border border-[#2A3341] hover:border-gray-500 rounded-xl text-xs font-semibold text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0"
+              className="px-3.5 py-2.5 sm:py-2 bg-graphite border border-graphite-border hover:border-gray-500 rounded-xl text-xs font-semibold text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#00C853]" />
+              <SlidersHorizontal className="w-3.5 h-3.5 text-signal-green" />
               Columns
             </button>
 
             {showColumnDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-[#1D2430] border border-[#2A3341] rounded-xl shadow-2xl z-40 p-2 space-y-1">
-                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-2 py-1 border-b border-[#2A3341]">
+              <div className="absolute right-0 mt-2 w-48 bg-graphite-surface border border-graphite-border rounded-xl shadow-2xl z-40 p-2 space-y-1">
+                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-2 py-1 border-b border-graphite-border">
                   Toggle Columns
                 </div>
                 {table.getAllLeafColumns().map((column) => {
@@ -108,13 +108,13 @@ export default function DataTable({
                   return (
                     <label
                       key={column.id}
-                      className="flex items-center gap-2 px-2 py-2 sm:py-1.5 rounded-lg hover:bg-[#2A3341] cursor-pointer text-xs text-gray-300 capitalize min-h-[36px]"
+                      className="flex items-center gap-2 px-2 py-2 sm:py-1.5 rounded-lg hover:bg-graphite-border cursor-pointer text-xs text-gray-300 capitalize min-h-[36px]"
                     >
                       <input
                         type="checkbox"
                         checked={column.getIsVisible()}
                         onChange={column.getToggleVisibilityHandler()}
-                        className="accent-[#00C853] rounded"
+                        className="accent-signal-green rounded-sm"
                       />
                       <span>{column.id}</span>
                     </label>
@@ -127,11 +127,11 @@ export default function DataTable({
       </div>
 
       {/* Main Table Shell */}
-      <div className="rounded-xl border border-[#2A3341] overflow-hidden bg-[#1D2430] shadow-xl w-full max-w-full">
+      <div className="rounded-xl border border-graphite-border overflow-hidden bg-graphite-surface shadow-xl w-full max-w-full">
         {/* Desktop Table View (>= md) */}
         <div className="hidden md:block overflow-x-auto w-full scrollbar-thin scrollbar-thumb-gray-700">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#161B22] border-b border-[#2A3341] text-gray-400 uppercase tracking-wider font-bold">
+            <thead className="bg-graphite border-b border-graphite-border text-gray-400 uppercase tracking-wider font-bold">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -154,9 +154,9 @@ export default function DataTable({
                             {canSort && (
                               <span className="text-gray-500">
                                 {isSorted === 'asc' ? (
-                                  <ArrowUp className="w-3.5 h-3.5 text-[#00C853]" />
+                                  <ArrowUp className="w-3.5 h-3.5 text-signal-green" />
                                 ) : isSorted === 'desc' ? (
-                                  <ArrowDown className="w-3.5 h-3.5 text-[#00C853]" />
+                                  <ArrowDown className="w-3.5 h-3.5 text-signal-green" />
                                 ) : (
                                   <ArrowUpDown className="w-3.5 h-3.5" />
                                 )}
@@ -171,7 +171,7 @@ export default function DataTable({
               ))}
             </thead>
 
-            <tbody className="divide-y divide-[#2A3341]/60 font-medium text-gray-200">
+            <tbody className="divide-y divide-graphite-border/60 font-medium text-gray-200">
               {table.getRowModel().rows.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="text-center py-10 text-gray-400">
@@ -183,9 +183,9 @@ export default function DataTable({
                   <tr
                     key={row.id}
                     onClick={() => onRowClick && onRowClick(row.original)}
-                    className={`hover:bg-[#2A3341]/50 transition-colors ${
+                    className={`hover:bg-graphite-border/50 transition-colors ${
                       onRowClick ? 'cursor-pointer' : ''
-                    } ${row.getIsSelected() ? 'bg-[#00C853]/10' : ''}`}
+                    } ${row.getIsSelected() ? 'bg-signal-green/10' : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="py-3 px-4 whitespace-nowrap">
@@ -202,7 +202,7 @@ export default function DataTable({
         {/* Small Screens Mobile Card-Based Fallback View (< md) */}
         <div className="md:hidden p-3 space-y-3">
           {table.getRowModel().rows.length === 0 ? (
-            <div className="text-center py-8 text-gray-400 text-xs bg-[#161B22] border border-[#2A3341] rounded-xl">
+            <div className="text-center py-8 text-gray-400 text-xs bg-graphite border border-graphite-border rounded-xl">
               No matching records found.
             </div>
           ) : (
@@ -221,12 +221,12 @@ export default function DataTable({
                 <div
                   key={row.id}
                   onClick={() => onRowClick && onRowClick(row.original)}
-                  className={`p-4 rounded-xl border border-[#2A3341] bg-[#161B22] shadow-md space-y-3 transition-colors ${
-                    onRowClick ? 'cursor-pointer hover:bg-[#2A3341]/40' : ''
-                  } ${row.getIsSelected() ? 'border-[#00C853]/50 bg-[#00C853]/5' : ''}`}
+                  className={`p-4 rounded-xl border border-graphite-border bg-graphite shadow-md space-y-3 transition-colors ${
+                    onRowClick ? 'cursor-pointer hover:bg-graphite-border/40' : ''
+                  } ${row.getIsSelected() ? 'border-signal-green/50 bg-signal-green/5' : ''}`}
                 >
                   {/* Header Row: Checkbox + Primary Title + Secondary Badge */}
-                  <div className="flex items-center justify-between gap-2 border-b border-[#2A3341]/60 pb-2.5">
+                  <div className="flex items-center justify-between gap-2 border-b border-graphite-border/60 pb-2.5">
                     <div className="flex items-center gap-2.5 font-bold text-white text-xs min-w-0">
                       {selectCell && (
                         <div onClick={(e) => e.stopPropagation()} className="shrink-0 min-h-[32px] flex items-center">
@@ -258,7 +258,7 @@ export default function DataTable({
                         return (
                           <div
                             key={cell.id}
-                            className="flex items-center justify-between gap-2 py-1.5 px-2.5 rounded-lg bg-[#1D2430]/60 border border-[#2A3341]/40 min-h-[36px]"
+                            className="flex items-center justify-between gap-2 py-1.5 px-2.5 rounded-lg bg-graphite-surface/60 border border-graphite-border/40 min-h-[36px]"
                           >
                             <span className="text-gray-400 font-bold uppercase text-[10px] tracking-wider shrink-0">
                               {headerTitle}:
@@ -274,7 +274,7 @@ export default function DataTable({
 
                   {/* Actions Footer */}
                   {actionsCell && (
-                    <div className="pt-2 border-t border-[#2A3341]/60 flex items-center justify-end gap-2">
+                    <div className="pt-2 border-t border-graphite-border/60 flex items-center justify-end gap-2">
                       {flexRender(actionsCell.column.columnDef.cell, actionsCell.getContext())}
                     </div>
                   )}
@@ -285,14 +285,14 @@ export default function DataTable({
         </div>
 
         {/* Pagination Footer Controls */}
-        <div className="bg-[#161B22] border-t border-[#2A3341] py-3 px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
+        <div className="bg-graphite border-t border-graphite-border py-3 px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
           <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
             <div className="flex items-center gap-1.5">
               <span>Rows:</span>
               <select
                 value={table.getState().pagination.pageSize}
                 onChange={(e) => table.setPageSize(Number(e.target.value))}
-                className="bg-[#1D2430] border border-[#2A3341] text-white rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-[#00C853] min-h-[36px] sm:min-h-0"
+                className="bg-graphite-surface border border-graphite-border text-white rounded-lg px-2 py-1.5 text-xs focus:outline-hidden focus:border-signal-green min-h-[36px] sm:min-h-0"
               >
                 {[10, 20, 30, 40, 50].map((pageSize) => (
                   <option key={pageSize} value={pageSize}>
@@ -315,7 +315,7 @@ export default function DataTable({
               <button
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
-                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-[#2A3341] bg-[#1D2430] hover:bg-[#2A3341] text-gray-300 disabled:opacity-30 disabled:hover:bg-[#1D2430] transition-colors"
+                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-graphite-border bg-graphite-surface hover:bg-graphite-border text-gray-300 disabled:opacity-30 disabled:hover:bg-graphite-surface transition-colors"
                 title="First Page"
               >
                 <ChevronsLeft className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
@@ -323,7 +323,7 @@ export default function DataTable({
               <button
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
-                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-[#2A3341] bg-[#1D2430] hover:bg-[#2A3341] text-gray-300 disabled:opacity-30 disabled:hover:bg-[#1D2430] transition-colors"
+                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-graphite-border bg-graphite-surface hover:bg-graphite-border text-gray-300 disabled:opacity-30 disabled:hover:bg-graphite-surface transition-colors"
                 title="Previous Page"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
@@ -331,7 +331,7 @@ export default function DataTable({
               <button
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
-                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-[#2A3341] bg-[#1D2430] hover:bg-[#2A3341] text-gray-300 disabled:opacity-30 disabled:hover:bg-[#1D2430] transition-colors"
+                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-graphite-border bg-graphite-surface hover:bg-graphite-border text-gray-300 disabled:opacity-30 disabled:hover:bg-graphite-surface transition-colors"
                 title="Next Page"
               >
                 <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
@@ -339,7 +339,7 @@ export default function DataTable({
               <button
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
-                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-[#2A3341] bg-[#1D2430] hover:bg-[#2A3341] text-gray-300 disabled:opacity-30 disabled:hover:bg-[#1D2430] transition-colors"
+                className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-lg border border-graphite-border bg-graphite-surface hover:bg-graphite-border text-gray-300 disabled:opacity-30 disabled:hover:bg-graphite-surface transition-colors"
                 title="Last Page"
               >
                 <ChevronsRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />

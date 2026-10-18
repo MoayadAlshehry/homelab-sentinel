@@ -8,6 +8,8 @@ Homelab Sentinel brings service health, Docker operations, network visibility an
 
 *The screenshot shows the actual interface with synthetic data. It does not expose a live network or represent measured infrastructure performance.*
 
+[View the light theme](docs/images/dashboard-light-demo.png), also using fictional demonstration data.
+
 ## Capabilities
 
 - View system resources, service uptime and recent events.
@@ -28,6 +30,8 @@ The supported deployment target is a Debian-based **Linux arm64** host with Dock
 4. Complete the first-run credential change before using operational controls.
 
 See [PORTS.md](PORTS.md) for network bindings and [SECURITY.md](SECURITY.md) for the documented security model. Keep underlying monitoring services private as described in the deployment configuration.
+
+The frontend targets modern browsers: Chrome 111+, Safari 16.4+ and Firefox 128+, following [Tailwind CSS's browser requirements](https://tailwindcss.com/docs/upgrade-guide#browser-requirements).
 
 ## Development checks
 
