@@ -1,5 +1,7 @@
 # Homelab Sentinel
 
+![Homelab Sentinel — Infrastructure operations](docs/brand/project-header.png)
+
 **One operating view for a self-hosted environment.**
 
 Homelab Sentinel brings service health, Docker operations, network visibility and alerts into a FastAPI + React dashboard. I built it for my own infrastructure and actively use it on a **Raspberry Pi 5 running Debian-based Linux arm64**.
