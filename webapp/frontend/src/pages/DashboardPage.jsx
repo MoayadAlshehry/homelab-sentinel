@@ -14,6 +14,7 @@ export default function DashboardPage({ token, onNavigate }) {
   const [timeRange, setTimeRange] = useState('live');
   const [loading, setLoading] = useState(() => !GLOBAL_DASHBOARD_CACHE);
   const [fetchingHistory, setFetchingHistory] = useState(false);
+  const [refreshError, setRefreshError] = useState('');
 
   const fetchData = async () => {
     try {
@@ -74,8 +75,11 @@ export default function DashboardPage({ token, onNavigate }) {
         events: combinedEvents,
         trendData
       };
+      setRefreshError([sysRes, contRes, evRes, monRes, monEvRes].every(res => res.ok)
+        ? '' : 'Some telemetry could not be refreshed. Previously loaded values may still be shown.');
     } catch (e) {
       console.error('[DASHBOARD FETCH ERROR]', e);
+      setRefreshError('Telemetry could not be loaded. Check the service connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -140,15 +144,23 @@ export default function DashboardPage({ token, onNavigate }) {
     );
   }
 
-  const temp = sysMetrics?.temperature_c ?? 45.0;
-  const cpu = sysMetrics?.cpu_usage_pct ?? 12.0;
-  const ramUsedGb = sysMetrics?.ram_used_gb ?? 3.5;
-  const ramTotalGb = sysMetrics?.ram_total_gb ?? 16.0;
-  const ramPct = sysMetrics?.ram_used_pct ?? 22.0;
+  if (!sysMetrics) {
+    return <div role="alert" className="rounded-2xl border border-amber-500/40 bg-[#1D2430] p-6 space-y-3">
+      <h2 className="text-xl font-semibold text-white">Telemetry unavailable</h2>
+      <p className="text-sm text-gray-300">{refreshError || 'No system metrics are available from the configured service.'}</p>
+      <button className="rounded-lg bg-[#00C853] px-4 py-2 text-sm font-semibold text-black" onClick={fetchData}>Retry connection</button>
+    </div>;
+  }
+  const temp = sysMetrics.temperature_c ?? 0;
+  const cpu = sysMetrics.cpu_usage_pct ?? 0;
+  const ramUsedGb = sysMetrics.ram_used_gb ?? 0;
+  const ramTotalGb = sysMetrics.ram_total_gb ?? 0;
+  const ramPct = sysMetrics.ram_used_pct ?? 0;
   const disks = sysMetrics?.disks ?? [];
 
   return (
     <div className="space-y-8">
+      {refreshError && <div role="alert" className="rounded-xl border border-amber-500/40 p-4 text-sm text-amber-200">{refreshError}</div>}
       {/* Header Banner */}
       <div className="bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
         <div className="flex-1">
@@ -197,7 +209,7 @@ export default function DashboardPage({ token, onNavigate }) {
           </p>
           <p className="text-xs text-[#00C853] mt-1 font-medium flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-[#00C853] animate-pulse"></span>
-            100% Uptime Kuma Telemetry
+            Monitor status from Uptime Kuma
           </p>
         </div>
 

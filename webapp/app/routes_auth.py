@@ -23,7 +23,7 @@ def get_current_user(authorization: str = Header(None)):
         )
     token = authorization.split(" ")[1]
     payload = decode_access_token(token)
-    if not payload:
+    if not payload or not isinstance(payload.get("sub"), str):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token invalid or expired"

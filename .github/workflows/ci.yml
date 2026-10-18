@@ -18,14 +18,20 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Verify Python Syntax & Import Safety
+      - name: Verify Python Syntax
         run: |
           python -m compileall webapp/app webapp/main.py
+
+      - name: Install Backend Test Dependencies
+        run: pip install -r webapp/requirements-dev.txt
+
+      - name: Verify API Behavior and File Boundaries
+        run: python -m pytest webapp/tests -q
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Verify Frontend Build
         run: |
