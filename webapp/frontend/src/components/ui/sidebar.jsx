@@ -56,6 +56,9 @@ export const SidebarProvider = React.forwardRef(
 
     React.useEffect(() => {
       const handleKeyDown = (event) => {
+        if (event.key === "Escape") {
+          setOpenMobile(false)
+        }
         if (
           event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
           (event.metaKey || event.ctrlKey)
@@ -93,7 +96,7 @@ export const SidebarProvider = React.forwardRef(
             ...style,
           }}
           className={cn(
-            "group/sidebar-wrapper flex min-h-svh w-full text-[#F3F4F6] has-[[data-variant=inset]]:bg-[#161B22]",
+            "group/sidebar-wrapper flex min-h-svh w-full text-[#F3F4F6] has-data-[variant=inset]:bg-graphite",
             className
           )}
           ref={ref}
@@ -125,7 +128,7 @@ export const Sidebar = React.forwardRef(
       return (
         <div
           className={cn(
-            "flex h-full w-[--sidebar-width] flex-col bg-[#1D2430] text-[#F3F4F6]",
+            "flex h-full w-(--sidebar-width) flex-col bg-graphite-surface text-[#F3F4F6]",
             className
           )}
           ref={ref}
@@ -149,30 +152,30 @@ export const Sidebar = React.forwardRef(
         >
           <div
             className={cn(
-              "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
+              "duration-200 relative h-svh w-(--sidebar-width) bg-transparent transition-[width] ease-linear",
               "group-data-[collapsible=offcanvas]:w-0",
               "group-data-[side=right]:rotate-180",
               variant === "floating" || variant === "inset"
-                ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-                : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
+                ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+                : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
             )}
           />
           <div
             className={cn(
-              "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
+              "duration-200 fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] ease-linear md:flex",
               side === "left"
-                ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
-                : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+                ? "left-0 group-data-[collapsible=offcanvas]:-left-(--sidebar-width)"
+                : "right-0 group-data-[collapsible=offcanvas]:-right-(--sidebar-width)",
               variant === "floating" || variant === "inset"
-                ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-                : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=left]:border-[#2A3341] group-data-[side=right]:border-l group-data-[side=right]:border-[#2A3341]",
+                ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+                : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=left]:border-graphite-border group-data-[side=right]:border-l group-data-[side=right]:border-graphite-border",
               className
             )}
             {...props}
           >
             <div
               data-sidebar="sidebar"
-              className="flex h-full w-full flex-col bg-[#1D2430] border border-[#2A3341] rounded-xl shadow-lg group-data-[variant=inset]:bg-[#1D2430] overflow-hidden"
+              className="flex h-full w-full flex-col bg-graphite-surface border border-graphite-border rounded-xl shadow-lg group-data-[variant=inset]:bg-graphite-surface overflow-hidden"
             >
               {children}
             </div>
@@ -184,22 +187,23 @@ export const Sidebar = React.forwardRef(
           <div className="md:hidden fixed inset-0 z-50 flex">
             {/* Backdrop */}
             <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
               onClick={() => setOpenMobile(false)}
             />
 
             {/* Drawer Container */}
-            <div className="relative flex h-full w-[280px] max-w-[85vw] flex-col bg-[#1D2430] border-r border-[#2A3341] p-3 shadow-2xl z-50 animate-in slide-in-from-left duration-200">
-              <div className="flex items-center justify-between pb-2 border-b border-[#2A3341]">
+            <div className="relative flex h-full w-[280px] max-w-[85vw] flex-col bg-graphite-surface border-r border-graphite-border p-3 shadow-2xl z-50 animate-in slide-in-from-left duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-graphite-border">
                 <span className="text-xs font-bold text-white uppercase tracking-wider">Navigation</span>
                 <button
+                  aria-label="Close navigation"
                   onClick={() => setOpenMobile(false)}
-                  className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-[#2A3341] min-h-[36px] min-w-[36px] flex items-center justify-center"
+                  className="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-graphite-border min-h-[36px] min-w-[36px] flex items-center justify-center"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div data-sidebar="sidebar" className="flex h-full w-full flex-col bg-[#1D2430] overflow-hidden pt-2">
+              <div data-sidebar="sidebar" className="flex h-full w-full flex-col bg-graphite-surface overflow-hidden pt-2">
                 {children}
               </div>
             </div>
@@ -220,7 +224,7 @@ export const SidebarTrigger = React.forwardRef(
         ref={ref}
         data-sidebar="trigger"
         className={cn(
-          "h-8 w-8 rounded-lg text-gray-400 hover:text-white hover:bg-[#2A3341] transition-colors flex items-center justify-center min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-[32px]",
+          "h-8 w-8 rounded-lg text-gray-400 hover:text-white hover:bg-graphite-border transition-colors flex items-center justify-center min-h-[44px] min-w-[44px] md:min-h-[32px] md:min-w-[32px]",
           className
         )}
         onClick={(event) => {
@@ -247,8 +251,8 @@ export const SidebarInset = React.forwardRef(({ className, children, ...props },
     <main
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-[#161B22] overflow-hidden min-w-0",
-        "peer-data-[variant=inset]:min-h-[calc(100vh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:bg-[#161B22] md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-[#2A3341]/60 md:peer-data-[variant=inset]:shadow-sm",
+        "relative flex min-h-svh flex-1 flex-col bg-graphite overflow-hidden min-w-0",
+        "peer-data-[variant=inset]:min-h-[calc(100vh-(--spacing(4)))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:bg-graphite md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-graphite-border/60 md:peer-data-[variant=inset]:shadow-xs",
         className
       )}
       {...props}
@@ -264,7 +268,7 @@ export const SidebarHeader = React.forwardRef(({ className, ...props }, ref) => 
     ref={ref}
     data-sidebar="header"
     className={cn(
-      "flex flex-col gap-2 p-3 border-b border-[#2A3341]",
+      "flex flex-col gap-2 p-3 border-b border-graphite-border",
       "group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center",
       className
     )}
@@ -291,7 +295,7 @@ export const SidebarFooter = React.forwardRef(({ className, ...props }, ref) => 
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex flex-col gap-2 p-2 border-t border-[#2A3341]",
+      "flex flex-col gap-2 p-2 border-t border-graphite-border",
       "group-data-[collapsible=icon]:p-1.5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center",
       className
     )}
@@ -338,14 +342,14 @@ export const SidebarMenuButton = React.forwardRef(
     const isCollapsed = state === "collapsed"
 
     const buttonClass = cn(
-      "peer/menu-button flex w-full items-center gap-2.5 overflow-hidden rounded-md p-2 text-left text-xs font-medium outline-none transition-all",
-      "hover:bg-[#2A3341]/60 hover:text-gray-200",
+      "peer/menu-button flex w-full items-center gap-2.5 overflow-hidden rounded-md p-2 text-left text-xs font-medium outline-hidden transition-all",
+      "hover:bg-graphite-border/60 hover:text-gray-200",
       "focus-visible:ring-1 focus-visible:ring-[#00C853]",
       "disabled:pointer-events-none disabled:opacity-50",
       "aria-disabled:pointer-events-none aria-disabled:opacity-50",
-      "data-[active=true]:bg-[#00C853]/15 data-[active=true]:text-[#00C853] data-[active=true]:font-semibold",
+      "data-[active=true]:bg-signal-green/15 data-[active=true]:text-signal-green data-[active=true]:font-semibold",
       "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-2 group-data-[collapsible=icon]:gap-0",
-      "[&>span]:group-data-[collapsible=icon]:hidden",
+      "group-data-[collapsible=icon]:[&>span]:hidden",
       className
     )
 
@@ -362,7 +366,7 @@ export const SidebarMenuButton = React.forwardRef(
           {children}
         </button>
         {isCollapsed && tooltip && (
-          <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 bg-[#161B22] text-white text-xs font-medium rounded-md border border-[#2A3341] shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity z-50">
+          <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 bg-graphite text-white text-xs font-medium rounded-md border border-graphite-border shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity z-50">
             {tooltip}
           </div>
         )}

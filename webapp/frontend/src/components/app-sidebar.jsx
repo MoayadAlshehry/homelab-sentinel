@@ -72,12 +72,12 @@ export function AppSidebar({ activeTab, setActiveTab, user, onLogout, theme, tog
             <SidebarMenuButton
               onClick={toggleTheme}
               tooltip={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className="w-full flex items-center gap-2.5 text-xs font-medium text-gray-300 hover:bg-[#2A3341] hover:text-white rounded-lg transition-colors group-data-[collapsible=icon]:justify-center min-h-[36px]"
+              className="w-full flex items-center gap-2.5 text-xs font-medium text-gray-300 hover:bg-graphite-border hover:text-white rounded-lg transition-colors group-data-[collapsible=icon]:justify-center min-h-[36px]"
             >
               {theme === 'dark' ? (
-                <Sun className="h-4 w-4 text-amber-400 flex-shrink-0" />
+                <Sun className="h-4 w-4 text-amber-400 shrink-0" />
               ) : (
-                <Moon className="h-4 w-4 text-indigo-400 flex-shrink-0" />
+                <Moon className="h-4 w-4 text-indigo-400 shrink-0" />
               )}
               <span className="truncate group-data-[collapsible=icon]:hidden">
                 {theme === 'dark' ? "Light Mode" : "Dark Mode"}

@@ -35,12 +35,12 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
 
   return (
     <aside
-      className={`bg-[#1D2430] border-r border-[#2A3341] flex flex-col justify-between transition-all duration-300 ease-in-out sticky top-0 h-screen z-40 select-none ${
+      className={`bg-graphite-surface border-r border-graphite-border flex flex-col justify-between transition-all duration-300 ease-in-out sticky top-0 h-screen z-40 select-none ${
         collapsed ? 'w-14' : 'w-56'
       }`}
     >
       {/* Sidebar Header */}
-      <div className="p-3 border-b border-[#2A3341] flex items-center justify-between">
+      <div className="p-3 border-b border-graphite-border flex items-center justify-between">
         <div className="flex items-center overflow-hidden">
           <img src="/logo.svg" alt="Homelab Sentinel" className="h-7 w-auto object-contain" />
         </div>
@@ -48,7 +48,7 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
         <button
           onClick={toggleSidebar}
           title={collapsed ? 'Expand Sidebar (Ctrl+B)' : 'Collapse Sidebar (Ctrl+B)'}
-          className="p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-[#2A3341] transition-colors"
+          className="p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-graphite-border transition-colors"
         >
           {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
         </button>
@@ -67,17 +67,17 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
                   collapsed ? 'justify-center' : 'space-x-2.5'
                 } ${
                   isActive
-                    ? 'bg-[#00C853]/15 text-[#00C853] font-semibold'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-[#2A3341]/60'
+                    ? 'bg-signal-green/15 text-signal-green font-semibold'
+                    : 'text-gray-400 hover:text-gray-200 hover:bg-graphite-border/60'
                 }`}
               >
-                <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#00C853]' : 'text-gray-400 group-hover:text-gray-200'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-signal-green' : 'text-gray-400 group-hover:text-gray-200'}`} />
                 {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
               </button>
 
               {/* Collapsed Tooltip */}
               {collapsed && (
-                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 bg-[#161B22] text-white text-xs font-medium rounded-md border border-[#2A3341] shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 bg-graphite text-white text-xs font-medium rounded-md border border-graphite-border shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
                   {item.label}
                 </div>
               )}
@@ -87,11 +87,11 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
       </div>
 
       {/* Sidebar Footer User Section */}
-      <div className="p-3 border-t border-[#2A3341] bg-[#161B22]/30">
+      <div className="p-3 border-t border-graphite-border bg-graphite/30">
         {user && (
           <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between space-x-2'}`}>
             <div className="flex items-center space-x-2 overflow-hidden">
-              <div className="w-2 h-2 rounded-full bg-[#69F0AE] animate-pulse flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded-full bg-signal-glow animate-pulse shrink-0"></div>
               {!collapsed && (
                 <span className="text-xs font-medium text-gray-300 truncate">{user.username}</span>
               )}
@@ -100,7 +100,7 @@ export default function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
             <button
               onClick={onLogout}
               title="Sign out"
-              className="text-gray-400 hover:text-rose-400 p-1.5 rounded-md hover:bg-[#2A3341] transition-colors"
+              className="text-gray-400 hover:text-rose-400 p-1.5 rounded-md hover:bg-graphite-border transition-colors"
             >
               <LogOut className="w-4 h-4" />
             </button>

@@ -129,24 +129,24 @@ export default function CommandPalette({ isOpen, onClose, onNavigate, token }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center pt-20 px-4"
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-20 px-4"
       onClick={onClose}
     >
       <div
-        className="bg-[#1D2430] border border-[#2A3341] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[70vh] animate-in fade-in zoom-in-95 duration-150"
+        className="bg-graphite-surface border border-graphite-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[70vh] animate-in fade-in zoom-in-95 duration-150"
         onClick={e => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 border-b border-[#2A3341] bg-[#161B22]/60">
-          <Search className="w-5 h-5 text-[#00C853] mr-3 flex-shrink-0" />
+        <div className="flex items-center px-4 border-b border-graphite-border bg-graphite/60">
+          <Search className="w-5 h-5 text-signal-green mr-3 shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Type a command, page, container, monitor, or IP address..."
-            className="w-full py-4 bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none"
+            className="w-full py-4 bg-transparent text-sm text-white placeholder-gray-500 focus:outline-hidden"
           />
           <button
             onClick={onClose}
@@ -173,13 +173,13 @@ export default function CommandPalette({ isOpen, onClose, onNavigate, token }) {
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all text-xs ${
                     isSelected
-                      ? 'bg-[#00C853]/15 text-white border border-[#00C853]/30'
-                      : 'hover:bg-[#2A3341]/60 text-gray-300 border border-transparent'
+                      ? 'bg-signal-green/15 text-white border border-signal-green/30'
+                      : 'hover:bg-graphite-border/60 text-gray-300 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className={`p-2 rounded-lg flex-shrink-0 ${
-                      isSelected ? 'bg-[#00C853] text-[#161B22]' : 'bg-[#2A3341] text-gray-300'
+                    <div className={`p-2 rounded-lg shrink-0 ${
+                      isSelected ? 'bg-signal-green text-graphite' : 'bg-graphite-border text-gray-300'
                     }`}>
                       <Icon className="w-4 h-4" />
                     </div>
@@ -191,11 +191,11 @@ export default function CommandPalette({ isOpen, onClose, onNavigate, token }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#161B22] border border-[#2A3341] text-gray-400 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 shrink-0 ml-3">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-graphite border border-graphite-border text-gray-400 uppercase tracking-wider">
                       {item.category}
                     </span>
-                    {isSelected && <ArrowRight className="w-3.5 h-3.5 text-[#00C853]" />}
+                    {isSelected && <ArrowRight className="w-3.5 h-3.5 text-signal-green" />}
                   </div>
                 </div>
               );
@@ -204,13 +204,13 @@ export default function CommandPalette({ isOpen, onClose, onNavigate, token }) {
         </div>
 
         {/* Footer shortcuts */}
-        <div className="px-4 py-2 bg-[#161B22] border-t border-[#2A3341] flex items-center justify-between text-[11px] text-gray-500">
+        <div className="px-4 py-2 bg-graphite border-t border-graphite-border flex items-center justify-between text-[11px] text-gray-500">
           <div className="flex items-center gap-3">
-            <span><kbd className="px-1.5 py-0.5 bg-[#2A3341] text-gray-300 rounded text-[10px]">↑</kbd> <kbd className="px-1.5 py-0.5 bg-[#2A3341] text-gray-300 rounded text-[10px]">↓</kbd> to navigate</span>
-            <span><kbd className="px-1.5 py-0.5 bg-[#2A3341] text-gray-300 rounded text-[10px]">↵</kbd> to select</span>
-            <span><kbd className="px-1.5 py-0.5 bg-[#2A3341] text-gray-300 rounded text-[10px]">esc</kbd> to close</span>
+            <span><kbd className="px-1.5 py-0.5 bg-graphite-border text-gray-300 rounded-sm text-[10px]">↑</kbd> <kbd className="px-1.5 py-0.5 bg-graphite-border text-gray-300 rounded-sm text-[10px]">↓</kbd> to navigate</span>
+            <span><kbd className="px-1.5 py-0.5 bg-graphite-border text-gray-300 rounded-sm text-[10px]">↵</kbd> to select</span>
+            <span><kbd className="px-1.5 py-0.5 bg-graphite-border text-gray-300 rounded-sm text-[10px]">esc</kbd> to close</span>
           </div>
-          <span className="font-mono text-[#00C853]">Homelab Sentinel</span>
+          <span className="font-mono text-signal-green">Homelab Sentinel</span>
         </div>
       </div>
     </div>

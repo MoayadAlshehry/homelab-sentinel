@@ -111,7 +111,7 @@ export default function NetworkPage({ token }) {
     if (v.includes('synology') || v.includes('qnap') || v.includes('supermicro') || v.includes('vmware')) {
       return Server;
     }
-    if (v.includes('hikvision') || v.includes('dahua') || v.includes('reolink') || v.includes('axis') || v.includes('ring') || v.includes('nest')) {
+    if (v.includes('hikvision') || v.includes('dahua') || v.includes('reolink') || v.includes('axis') || v.includes('ring-3') || v.includes('nest')) {
       return Camera;
     }
     if (v.includes('tp-link') || v.includes('cisco') || v.includes('netgear') || v.includes('ubiquiti') || v.includes('zte')) {
@@ -144,7 +144,7 @@ export default function NetworkPage({ token }) {
         const IconComponent = getDeviceIcon(d.vendor, d.device_type);
         return (
           <div className="font-mono font-bold text-white flex items-center gap-2.5">
-            <div className="p-1.5 bg-[#161B22] border border-[#2A3341] rounded-lg text-[#00C853]">
+            <div className="p-1.5 bg-graphite border border-graphite-border rounded-lg text-signal-green">
               <IconComponent className="w-4 h-4" />
             </div>
             <span>{d.ip}</span>
@@ -160,10 +160,10 @@ export default function NetworkPage({ token }) {
         return (
           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
             isOnline 
-              ? 'bg-[#00C853]/15 text-[#00C853] border border-[#00C853]/30' 
+              ? 'bg-signal-green/15 text-signal-green border border-signal-green/30'
               : 'bg-gray-500/15 text-gray-400 border border-gray-500/30'
           }`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-[#00C853] animate-pulse' : 'bg-gray-500'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-signal-green animate-pulse' : 'bg-gray-500'}`} />
             {isOnline ? 'ONLINE' : 'OFFLINE'}
           </span>
         );
@@ -185,12 +185,12 @@ export default function NetworkPage({ token }) {
                 value={editName}
                 onChange={e => setEditName(e.target.value)}
                 placeholder="Custom Label..."
-                className="bg-[#161B22] border border-[#2A3341] rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-[#00C853] w-32"
+                className="bg-graphite border border-graphite-border rounded-lg px-2 py-1 text-xs text-white focus:outline-hidden focus:border-signal-green w-32"
               />
               <select
                 value={editType}
                 onChange={e => setEditType(e.target.value)}
-                className="bg-[#161B22] border border-[#2A3341] rounded-lg px-2 py-1 text-xs text-white focus:outline-none"
+                className="bg-graphite border border-graphite-border rounded-lg px-2 py-1 text-xs text-white focus:outline-hidden"
               >
                 <option value="auto">Auto</option>
                 <option value="phone">Phone</option>
@@ -207,7 +207,7 @@ export default function NetworkPage({ token }) {
               </select>
               <button
                 onClick={() => handleSaveEdit(d.mac)}
-                className="p-1 bg-[#00C853]/20 text-[#00C853] hover:bg-[#00C853]/30 rounded-md transition-colors"
+                className="p-1 bg-signal-green/20 text-signal-green hover:bg-signal-green/30 rounded-md transition-colors"
                 title="Save"
               >
                 <Check className="w-3.5 h-3.5" />
@@ -243,7 +243,7 @@ export default function NetworkPage({ token }) {
                 setEditName(d.custom_name || '');
                 setEditType(d.device_type || 'auto');
               }}
-              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-[#2A3341] text-gray-400 hover:text-white rounded transition-all"
+              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-graphite-border text-gray-400 hover:text-white rounded-sm transition-all"
               title="Edit Device Label"
             >
               <Edit2 className="w-3 h-3" />
@@ -269,7 +269,7 @@ export default function NetworkPage({ token }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Network className="w-5 h-5 text-[#00C853]" />
+            <Network className="w-5 h-5 text-signal-green" />
             LAN Network Scanner & Device Directory
           </h2>
           <p className="text-sm text-gray-400 mt-1">Real-time Layer 2 ARP subnet scanning and MAC vendor resolution.</p>
@@ -284,16 +284,16 @@ export default function NetworkPage({ token }) {
           <button
             disabled={scanning}
             onClick={handleTriggerScan}
-            className="px-4 py-2 bg-[#00C853] hover:bg-[#69F0AE] text-[#161B22] font-bold rounded-xl text-xs transition-colors flex items-center gap-2 shadow-lg shadow-[#00C853]/20 disabled:opacity-50"
+            className="px-4 py-2 bg-signal-green hover:bg-signal-glow text-graphite font-bold rounded-xl text-xs transition-colors flex items-center gap-2 shadow-lg shadow-[#00C853]/20 disabled:opacity-50"
           >
             {scanning ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#161B22]" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-graphite" />
                 Scanning Subnet...
               </>
             ) : (
               <>
-                <RefreshCw className="w-3.5 h-3.5 text-[#161B22]" />
+                <RefreshCw className="w-3.5 h-3.5 text-graphite" />
                 Trigger ARP Scan
               </>
             )}
@@ -303,7 +303,7 @@ export default function NetworkPage({ token }) {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[#00C853]" />
+          <Loader2 className="w-8 h-8 animate-spin text-signal-green" />
         </div>
       ) : (
         <DataTable

@@ -10,16 +10,16 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
   ];
 
   return (
-    <nav className="bg-[#1D2430] sticky top-0 z-40 border-b border-[#2A3341] px-6 py-3 shadow-md">
+    <nav className="bg-graphite-surface sticky top-0 z-40 border-b border-graphite-border px-6 py-3 shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-[#00C853]/10 rounded-xl border border-[#00C853]/30 text-[#00C853]">
+          <div className="p-2 bg-signal-green/10 rounded-xl border border-signal-green/30 text-signal-green">
             <Shield className="w-6 h-6" />
           </div>
           <div>
             <h1 className="font-bold text-lg text-white tracking-wide flex items-center gap-2">
               Homelab Sentinel
-              <span className="text-xs px-2 py-0.5 rounded-full bg-[#00C853]/10 text-[#00C853] border border-[#00C853]/20 font-medium">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-signal-green/10 text-signal-green border border-signal-green/20 font-medium">
                 Pi 5 Active
               </span>
             </h1>
@@ -36,8 +36,8 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
                 onClick={() => setActiveTab(item.id)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                   isActive
-                    ? 'bg-[#00C853] text-[#161B22] shadow-lg shadow-[#00C853]/30'
-                    : 'text-gray-300 hover:text-white hover:bg-[#2A3341]/60'
+                    ? 'bg-signal-green text-graphite shadow-lg shadow-[#00C853]/30'
+                    : 'text-gray-300 hover:text-white hover:bg-graphite-border/60'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -49,8 +49,8 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
 
         <div className="flex items-center space-x-4">
           {user && (
-            <div className="flex items-center space-x-3 bg-[#161B22] px-3 py-1.5 rounded-xl border border-[#2A3341]">
-              <div className="w-2 h-2 rounded-full bg-[#69F0AE] animate-pulse"></div>
+            <div className="flex items-center space-x-3 bg-graphite px-3 py-1.5 rounded-xl border border-graphite-border">
+              <div className="w-2 h-2 rounded-full bg-signal-glow animate-pulse"></div>
               <span className="text-sm font-medium text-gray-200">{user.username}</span>
               <button
                 onClick={onLogout}

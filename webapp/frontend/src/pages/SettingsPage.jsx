@@ -169,7 +169,7 @@ export default function SettingsPage({ token }) {
     <div className="space-y-8 max-w-4xl mx-auto">
       <div>
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <Settings className="w-5 h-5 text-[#00C853]" />
+          <Settings className="w-5 h-5 text-signal-green" />
           System Settings & Alert Integrations
         </h2>
         <p className="text-sm text-gray-400 mt-1">Configure Telegram/Discord alert webhooks, notification levels, and admin credentials.</p>
@@ -178,26 +178,26 @@ export default function SettingsPage({ token }) {
       {message.text && (
         <div className={`p-4 rounded-xl border flex items-center gap-3 text-sm font-medium ${
           message.type === 'success'
-            ? 'bg-[#00C853]/10 border-[#00C853]/30 text-[#00C853]'
+            ? 'bg-signal-green/10 border-signal-green/30 text-signal-green'
             : 'bg-red-500/10 border-red-500/30 text-red-400'
         }`}>
-          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
+          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
           <span>{message.text}</span>
         </div>
       )}
 
       {/* Alert Webhooks & Notification Level Form */}
-      <div className="bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] shadow-xl space-y-6">
+      <div className="bg-graphite-surface p-6 rounded-2xl border border-graphite-border shadow-xl space-y-6">
         <h3 className="text-base font-semibold text-white flex items-center gap-2">
-          <Bell className="w-5 h-5 text-[#00C853]" />
+          <Bell className="w-5 h-5 text-signal-green" />
           Alert Channels Configuration
         </h3>
 
         <form onSubmit={handleSaveSettings} className="space-y-6">
           {/* 3-Tier Notification Level Selector */}
-          <div className="space-y-3 p-4 bg-[#161B22] rounded-xl border border-[#2A3341]">
+          <div className="space-y-3 p-4 bg-graphite rounded-xl border border-graphite-border">
             <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-[#00C853]" />
+              <Sliders className="w-4 h-4 text-signal-green" />
               Notification Level (Verbosity Filter)
             </label>
             <p className="text-xs text-gray-400">
@@ -207,8 +207,8 @@ export default function SettingsPage({ token }) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <label className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col ${
                 notificationLevel === 'all' 
-                  ? 'bg-[#00C853]/15 border-[#00C853] text-white shadow-md shadow-[#00C853]/10' 
-                  : 'bg-[#1D2430] border-[#2A3341] text-gray-400 hover:border-gray-500'
+                  ? 'bg-signal-green/15 border-signal-green text-white shadow-md shadow-[#00C853]/10'
+                  : 'bg-graphite-surface border-graphite-border text-gray-400 hover:border-gray-500'
               }`}>
                 <div className="flex items-center gap-2 font-bold text-xs">
                   <input
@@ -217,7 +217,7 @@ export default function SettingsPage({ token }) {
                     value="all"
                     checked={notificationLevel === 'all'}
                     onChange={() => setNotificationLevel('all')}
-                    className="accent-[#00C853]"
+                    className="accent-signal-green"
                   />
                   All Events
                 </div>
@@ -228,8 +228,8 @@ export default function SettingsPage({ token }) {
 
               <label className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col ${
                 notificationLevel === 'minimum' 
-                  ? 'bg-[#00C853]/15 border-[#00C853] text-white shadow-md shadow-[#00C853]/10' 
-                  : 'bg-[#1D2430] border-[#2A3341] text-gray-400 hover:border-gray-500'
+                  ? 'bg-signal-green/15 border-signal-green text-white shadow-md shadow-[#00C853]/10'
+                  : 'bg-graphite-surface border-graphite-border text-gray-400 hover:border-gray-500'
               }`}>
                 <div className="flex items-center gap-2 font-bold text-xs">
                   <input
@@ -238,7 +238,7 @@ export default function SettingsPage({ token }) {
                     value="minimum"
                     checked={notificationLevel === 'minimum'}
                     onChange={() => setNotificationLevel('minimum')}
-                    className="accent-[#00C853]"
+                    className="accent-signal-green"
                   />
                   Minimum (Default)
                 </div>
@@ -250,7 +250,7 @@ export default function SettingsPage({ token }) {
               <label className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col ${
                 notificationLevel === 'off' 
                   ? 'bg-rose-500/15 border-rose-500 text-white shadow-md shadow-rose-500/10' 
-                  : 'bg-[#1D2430] border-[#2A3341] text-gray-400 hover:border-gray-500'
+                  : 'bg-graphite-surface border-graphite-border text-gray-400 hover:border-gray-500'
               }`}>
                 <div className="flex items-center gap-2 font-bold text-xs">
                   <input
@@ -271,7 +271,7 @@ export default function SettingsPage({ token }) {
           </div>
 
           {/* Quiet Hours Schedule Block */}
-          <div className="space-y-3 p-4 bg-[#161B22] rounded-xl border border-[#2A3341]">
+          <div className="space-y-3 p-4 bg-graphite rounded-xl border border-graphite-border">
             <div className="flex items-center justify-between">
               <div>
                 <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
@@ -289,19 +289,19 @@ export default function SettingsPage({ token }) {
                   onChange={(e) => setQuietHoursEnabled(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-[#2A3341] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00C853]"></div>
+                <div className="w-11 h-6 bg-graphite-border peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-signal-green"></div>
               </label>
             </div>
 
             {quietHoursEnabled && (
-              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-[#2A3341]">
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-graphite-border">
                 <div>
                   <label className="block text-[11px] font-medium text-gray-300 mb-1">Start Time (Local)</label>
                   <input
                     type="time"
                     value={quietHoursStart}
                     onChange={(e) => setQuietHoursStart(e.target.value)}
-                    className="w-full bg-[#1D2430] border border-[#2A3341] rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-[#00C853]"
+                    className="w-full bg-graphite-surface border border-graphite-border rounded-lg px-3 py-1.5 text-white text-xs focus:outline-hidden focus:border-signal-green"
                   />
                 </div>
                 <div>
@@ -310,7 +310,7 @@ export default function SettingsPage({ token }) {
                     type="time"
                     value={quietHoursEnd}
                     onChange={(e) => setQuietHoursEnd(e.target.value)}
-                    className="w-full bg-[#1D2430] border border-[#2A3341] rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-[#00C853]"
+                    className="w-full bg-graphite-surface border border-graphite-border rounded-lg px-3 py-1.5 text-white text-xs focus:outline-hidden focus:border-signal-green"
                   />
                 </div>
               </div>
@@ -321,14 +321,14 @@ export default function SettingsPage({ token }) {
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Telegram Bot Integration</h4>
             <div>
               <label className="block text-xs font-medium text-gray-300 mb-1">
-                Telegram Bot Token {settings.telegram_bot_token_masked && <span className="text-[#00C853] text-[11px]">(Configured: {settings.telegram_bot_token_masked})</span>}
+                Telegram Bot Token {settings.telegram_bot_token_masked && <span className="text-signal-green text-[11px]">(Configured: {settings.telegram_bot_token_masked})</span>}
               </label>
               <input
                 type="password"
                 value={telegramToken}
                 onChange={(e) => setTelegramToken(e.target.value)}
                 placeholder="Leave blank to keep existing token..."
-                className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+                className="w-full bg-graphite border border-graphite-border rounded-xl py-2.5 px-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
               />
             </div>
 
@@ -340,16 +340,16 @@ export default function SettingsPage({ token }) {
                   value={telegramChatId}
                   onChange={(e) => setTelegramChatId(e.target.value)}
                   placeholder="e.g. 987654321"
-                  className="flex-1 bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+                  className="flex-1 bg-graphite border border-graphite-border rounded-xl py-2.5 px-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
                 />
                 <button
                   type="button"
                   disabled={testingChannel === 'telegram'}
                   onClick={() => handleTestNotification('telegram')}
-                  className="px-4 py-2.5 bg-[#2A3341] hover:bg-[#374151] text-gray-200 border border-[#374151] rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  className="px-4 py-2.5 bg-graphite-border hover:bg-[#374151] text-gray-200 border border-[#374151] rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
                   {testingChannel === 'telegram' ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#00C853]" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-signal-green" />
                   ) : (
                     <Send className="w-3.5 h-3.5" />
                   )}
@@ -359,13 +359,13 @@ export default function SettingsPage({ token }) {
             </div>
           </div>
 
-          <hr className="border-[#2A3341]" />
+          <hr className="border-graphite-border" />
 
           <div className="space-y-4">
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Discord Webhook Integration</h4>
             <div>
               <label className="block text-xs font-medium text-gray-300 mb-1">
-                Webhook URL {settings.discord_webhook_url_masked && <span className="text-[#00C853] text-[11px]">(Configured: {settings.discord_webhook_url_masked})</span>}
+                Webhook URL {settings.discord_webhook_url_masked && <span className="text-signal-green text-[11px]">(Configured: {settings.discord_webhook_url_masked})</span>}
               </label>
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
@@ -373,16 +373,16 @@ export default function SettingsPage({ token }) {
                   value={discordWebhookUrl}
                   onChange={(e) => setDiscordWebhookUrl(e.target.value)}
                   placeholder="e.g. https://discord.com/api/webhooks/..."
-                  className="flex-1 bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+                  className="flex-1 bg-graphite border border-graphite-border rounded-xl py-2.5 px-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
                 />
                 <button
                   type="button"
                   disabled={testingChannel === 'discord'}
                   onClick={() => handleTestNotification('discord')}
-                  className="px-4 py-2.5 bg-[#2A3341] hover:bg-[#374151] text-gray-200 border border-[#374151] rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  className="px-4 py-2.5 bg-graphite-border hover:bg-[#374151] text-gray-200 border border-[#374151] rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
                   {testingChannel === 'discord' ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#00C853]" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-signal-green" />
                   ) : (
                     <Send className="w-3.5 h-3.5" />
                   )}
@@ -395,11 +395,11 @@ export default function SettingsPage({ token }) {
           <button
             type="submit"
             disabled={saveLoading}
-            className="px-6 py-2.5 bg-[#00C853] hover:bg-[#69F0AE] text-[#161B22] font-bold rounded-xl transition-all shadow-lg shadow-[#00C853]/25 text-sm flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2.5 bg-signal-green hover:bg-signal-glow text-graphite font-bold rounded-xl transition-all shadow-lg shadow-[#00C853]/25 text-sm flex items-center gap-2 disabled:opacity-50"
           >
             {saveLoading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-[#161B22]" />
+                <Loader2 className="w-4 h-4 animate-spin text-graphite" />
                 Saving...
               </>
             ) : (
@@ -410,9 +410,9 @@ export default function SettingsPage({ token }) {
       </div>
 
       {/* Change Credentials Form */}
-      <div className="bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] shadow-xl">
+      <div className="bg-graphite-surface p-6 rounded-2xl border border-graphite-border shadow-xl">
         <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
-          <Lock className="w-5 h-5 text-[#00C853]" />
+          <Lock className="w-5 h-5 text-signal-green" />
           Admin Credentials Management
         </h3>
 
@@ -424,7 +424,7 @@ export default function SettingsPage({ token }) {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Required to confirm identity..."
-              className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+              className="w-full bg-graphite border border-graphite-border rounded-xl py-2.5 px-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
             />
           </div>
 
@@ -437,7 +437,7 @@ export default function SettingsPage({ token }) {
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
                 placeholder="e.g. admin"
-                className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+                className="w-full bg-graphite border border-graphite-border rounded-xl py-2.5 px-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
               />
             </div>
 
@@ -449,7 +449,7 @@ export default function SettingsPage({ token }) {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 px-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+                className="w-full bg-graphite border border-graphite-border rounded-xl py-2.5 px-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
               />
             </div>
           </div>
@@ -457,11 +457,11 @@ export default function SettingsPage({ token }) {
           <button
             type="submit"
             disabled={credLoading}
-            className="px-6 py-2.5 bg-[#00C853] hover:bg-[#69F0AE] text-[#161B22] font-bold rounded-xl transition-all shadow-lg shadow-[#00C853]/25 text-sm flex items-center gap-2 disabled:opacity-50 mt-2"
+            className="px-6 py-2.5 bg-signal-green hover:bg-signal-glow text-graphite font-bold rounded-xl transition-all shadow-lg shadow-[#00C853]/25 text-sm flex items-center gap-2 disabled:opacity-50 mt-2"
           >
             {credLoading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-[#161B22]" />
+                <Loader2 className="w-4 h-4 animate-spin text-graphite" />
                 Updating Credentials...
               </>
             ) : (
@@ -472,15 +472,15 @@ export default function SettingsPage({ token }) {
       </div>
 
       {/* Notification History Log Card */}
-      <div className="bg-[#1D2430] p-6 rounded-2xl border border-[#2A3341] shadow-xl">
+      <div className="bg-graphite-surface p-6 rounded-2xl border border-graphite-border shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Bell className="w-5 h-5 text-[#00C853]" />
+            <Bell className="w-5 h-5 text-signal-green" />
             Notification History Log
           </h2>
           <button
             onClick={fetchHistory}
-            className="text-xs text-[#00C853] hover:underline font-medium"
+            className="text-xs text-signal-green hover:underline font-medium"
           >
             Refresh Log
           </button>
@@ -489,7 +489,7 @@ export default function SettingsPage({ token }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-[#2A3341] text-gray-400 font-semibold uppercase tracking-wider">
+              <tr className="border-b border-graphite-border text-gray-400 font-semibold uppercase tracking-wider">
                 <th className="pb-3 px-3">Timestamp</th>
                 <th className="pb-3 px-3">Title</th>
                 <th className="pb-3 px-3">Channel</th>
@@ -497,7 +497,7 @@ export default function SettingsPage({ token }) {
                 <th className="pb-3 px-3">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A3341]/60">
+            <tbody className="divide-y divide-graphite-border/60">
               {notifHistory.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-6 text-center text-gray-500">
@@ -506,7 +506,7 @@ export default function SettingsPage({ token }) {
                 </tr>
               ) : (
                 notifHistory.map((item) => (
-                  <tr key={item.id} className="hover:bg-[#161B22]/50 transition-colors">
+                  <tr key={item.id} className="hover:bg-graphite/50 transition-colors">
                     <td className="py-2.5 px-3 font-mono text-gray-400">{item.timestamp}</td>
                     <td className="py-2.5 px-3 font-bold text-white">{item.title}</td>
                     <td className="py-2.5 px-3 text-gray-300 font-medium">{item.channel}</td>
@@ -522,7 +522,7 @@ export default function SettingsPage({ token }) {
                     <td className="py-2.5 px-3">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                         item.status === 'SENT' 
-                          ? 'bg-[#00C853]/20 text-[#00C853] border border-[#00C853]/30' 
+                          ? 'bg-signal-green/20 text-signal-green border border-signal-green/30'
                           : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                       }`}>
                         {item.status}

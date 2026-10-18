@@ -196,7 +196,7 @@ export default function MonitoringPage({ token }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <Activity className="w-6 h-6 text-[#00C853]" />
+            <Activity className="w-6 h-6 text-signal-green" />
             API & Service Health Monitor
           </h1>
           <p className="text-xs text-gray-400 mt-1">
@@ -208,15 +208,15 @@ export default function MonitoringPage({ token }) {
           <button
             onClick={() => fetchMonitors(true)}
             disabled={refreshing}
-            className="px-3.5 py-2 rounded-xl bg-[#1D2430] border border-[#2A3341] text-gray-300 hover:text-white text-xs font-semibold flex items-center gap-2 hover:border-[#00C853] transition-all disabled:opacity-50"
+            className="px-3.5 py-2 rounded-xl bg-graphite-surface border border-graphite-border text-gray-300 hover:text-white text-xs font-semibold flex items-center gap-2 hover:border-signal-green transition-all disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-[#00C853]' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-signal-green' : ''}`} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </button>
 
           <button
             onClick={handleOpenAddModal}
-            className="px-4 py-2 rounded-xl bg-[#00C853] text-[#161B22] font-bold text-xs flex items-center gap-2 hover:bg-[#69F0AE] transition-all shadow-lg shadow-[#00C853]/20"
+            className="px-4 py-2 rounded-xl bg-signal-green text-graphite font-bold text-xs flex items-center gap-2 hover:bg-signal-glow transition-all shadow-lg shadow-[#00C853]/20"
           >
             <Plus className="w-4 h-4" />
             Add Monitor
@@ -226,7 +226,7 @@ export default function MonitoringPage({ token }) {
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-[#1D2430] border border-[#2A3341] rounded-2xl p-5 shadow-sm">
+        <div className="bg-graphite-surface border border-graphite-border rounded-2xl p-5 shadow-xs">
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Monitored Targets</span>
           <div className="flex items-baseline justify-between mt-2">
             <span className="text-2xl font-bold text-white">{totalMonitors}</span>
@@ -234,17 +234,17 @@ export default function MonitoringPage({ token }) {
           </div>
         </div>
 
-        <div className="bg-[#1D2430] border border-[#2A3341] rounded-2xl p-5 shadow-sm">
+        <div className="bg-graphite-surface border border-graphite-border rounded-2xl p-5 shadow-xs">
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Services Online (UP)</span>
           <div className="flex items-baseline justify-between mt-2">
-            <span className="text-2xl font-bold text-[#00C853]">{upMonitors}</span>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#00C853]/10 text-[#00C853] border border-[#00C853]/20">
+            <span className="text-2xl font-bold text-signal-green">{upMonitors}</span>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-signal-green/10 text-signal-green border border-signal-green/20">
               {totalMonitors > 0 ? Math.round((upMonitors / totalMonitors) * 100) : 100}% Operational
             </span>
           </div>
         </div>
 
-        <div className="bg-[#1D2430] border border-[#2A3341] rounded-2xl p-5 shadow-sm">
+        <div className="bg-graphite-surface border border-graphite-border rounded-2xl p-5 shadow-xs">
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Active Incidents (DOWN)</span>
           <div className="flex items-baseline justify-between mt-2">
             <span className={`text-2xl font-bold ${downMonitors > 0 ? 'text-rose-500 animate-pulse' : 'text-gray-300'}`}>
@@ -256,7 +256,7 @@ export default function MonitoringPage({ token }) {
           </div>
         </div>
 
-        <div className="bg-[#1D2430] border border-[#2A3341] rounded-2xl p-5 shadow-sm">
+        <div className="bg-graphite-surface border border-graphite-border rounded-2xl p-5 shadow-xs">
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Avg Latency (24h)</span>
           <div className="flex items-baseline justify-between mt-2">
             <span className="text-2xl font-bold text-[#0EA5E9]">{avgLatency} ms</span>
@@ -267,12 +267,12 @@ export default function MonitoringPage({ token }) {
 
       {/* Monitors List Grid */}
       {loading ? (
-        <div className="bg-[#1D2430] border border-[#2A3341] rounded-2xl p-12 text-center text-gray-400 space-y-3">
-          <div className="w-6 h-6 border-2 border-[#00C853] border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div className="bg-graphite-surface border border-graphite-border rounded-2xl p-12 text-center text-gray-400 space-y-3">
+          <div className="w-6 h-6 border-2 border-signal-green border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-xs font-medium">Fetching telemetry monitors...</p>
         </div>
       ) : monitors.length === 0 ? (
-        <div className="bg-[#1D2430] border border-[#2A3341] rounded-2xl p-12 text-center text-gray-400 space-y-4">
+        <div className="bg-graphite-surface border border-graphite-border rounded-2xl p-12 text-center text-gray-400 space-y-4">
           <Activity className="w-12 h-12 text-gray-600 mx-auto" />
           <div>
             <h3 className="text-lg font-bold text-white">No Monitored Services Added</h3>
@@ -282,7 +282,7 @@ export default function MonitoringPage({ token }) {
           </div>
           <button
             onClick={handleOpenAddModal}
-            className="px-4 py-2 rounded-xl bg-[#00C853] text-[#161B22] font-bold text-xs hover:bg-[#69F0AE] transition-all inline-flex items-center gap-2"
+            className="px-4 py-2 rounded-xl bg-signal-green text-graphite font-bold text-xs hover:bg-signal-glow transition-all inline-flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Add First Monitor
@@ -298,14 +298,14 @@ export default function MonitoringPage({ token }) {
             return (
               <div
                 key={mon.id}
-                className="bg-[#1D2430] border border-[#2A3341] rounded-2xl p-5 space-y-4 hover:border-[#2A3341]/80 transition-all shadow-sm relative group"
+                className="bg-graphite-surface border border-graphite-border rounded-2xl p-5 space-y-4 hover:border-graphite-border/80 transition-all shadow-xs relative group"
               >
                 {/* Monitor Card Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-sm text-white truncate">{mon.name}</h3>
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-[#161B22] text-gray-400 border border-[#2A3341]">
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-graphite text-gray-400 border border-graphite-border">
                         {mon.type}
                       </span>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase ${
@@ -317,7 +317,7 @@ export default function MonitoringPage({ token }) {
                       </span>
                     </div>
                     <p className="text-xs text-gray-400 font-mono truncate flex items-center gap-1">
-                      <Globe className="w-3 h-3 text-gray-500 flex-shrink-0" />
+                      <Globe className="w-3 h-3 text-gray-500 shrink-0" />
                       {mon.url || mon.hostname || 'Internal Service'}
                     </p>
                   </div>
@@ -331,7 +331,7 @@ export default function MonitoringPage({ token }) {
                     )}
                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border ${
                       isUp 
-                        ? 'bg-[#00C853]/15 text-[#00C853] border-[#00C853]/30' 
+                        ? 'bg-signal-green/15 text-signal-green border-signal-green/30'
                         : isDown 
                           ? 'bg-rose-500/15 text-rose-400 border-rose-500/30' 
                           : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
@@ -350,7 +350,7 @@ export default function MonitoringPage({ token }) {
                         className={`p-1.5 rounded-lg transition-colors ${
                           mon.is_maintenance 
                             ? 'text-sky-400 bg-sky-500/20 border border-sky-500/30' 
-                            : 'text-gray-400 hover:text-white hover:bg-[#2A3341]'
+                            : 'text-gray-400 hover:text-white hover:bg-graphite-border'
                         }`}
                       >
                         <Clock className="w-3.5 h-3.5" />
@@ -359,7 +359,7 @@ export default function MonitoringPage({ token }) {
                         onClick={() => handleOpenEditModal(mon)}
                         disabled={isDeleting}
                         title="Edit Monitor"
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#2A3341] transition-colors disabled:opacity-50"
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-graphite-border transition-colors disabled:opacity-50"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
@@ -367,7 +367,7 @@ export default function MonitoringPage({ token }) {
                         onClick={() => handleDelete(mon.id, mon.name)}
                         disabled={isDeleting}
                         title="Delete Monitor"
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-[#2A3341] transition-colors disabled:opacity-50"
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-graphite-border transition-colors disabled:opacity-50"
                       >
                         {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" /> : <Trash2 className="w-3.5 h-3.5" />}
                       </button>
@@ -376,7 +376,7 @@ export default function MonitoringPage({ token }) {
                 </div>
 
                 {/* Telemetry Metrics Row */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#2A3341]/60 text-xs">
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-graphite-border/60 text-xs">
                   <div>
                     <span className="text-[10px] text-gray-400 block font-medium">24h Uptime</span>
                     <span className="font-bold text-white">{mon.uptime_24h}%</span>
@@ -398,7 +398,7 @@ export default function MonitoringPage({ token }) {
                       <span>Response History</span>
                       <span>Last check: {mon.last_check ? mon.last_check.split(' ')[1] : 'Just now'}</span>
                     </div>
-                    <div className="h-9 flex items-end gap-1 bg-[#161B22]/60 p-1.5 rounded-lg border border-[#2A3341]/40">
+                    <div className="h-9 flex items-end gap-1 bg-graphite/60 p-1.5 rounded-lg border border-graphite-border/40">
                       {mon.history.map((h, i) => {
                         const hIsUp = h.status === 'up';
                         const maxPing = 500;
@@ -407,8 +407,8 @@ export default function MonitoringPage({ token }) {
                           <div
                             key={i}
                             title={`${h.time}: ${h.ping}ms (${h.msg || h.status})`}
-                            className={`flex-1 rounded-sm transition-all ${
-                              hIsUp ? 'bg-[#00C853] hover:bg-[#69F0AE]' : 'bg-rose-500 hover:bg-rose-400'
+                            className={`flex-1 rounded-xs transition-all ${
+                              hIsUp ? 'bg-signal-green hover:bg-signal-glow' : 'bg-rose-500 hover:bg-rose-400'
                             }`}
                             style={{ height: `${barHeight}%` }}
                           />
@@ -425,9 +425,9 @@ export default function MonitoringPage({ token }) {
 
       {/* Add / Edit Monitor Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#161B22]/90 backdrop-blur-md p-4">
-          <div className="bg-[#1D2430] w-full max-w-md p-6 rounded-2xl border border-[#2A3341] shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-[#2A3341] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite/90 backdrop-blur-md p-4">
+          <div className="bg-graphite-surface w-full max-w-md p-6 rounded-2xl border border-graphite-border shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-graphite-border pb-3">
               <h2 className="text-lg font-bold text-white">
                 {editingMonitor ? 'Edit Telemetry Monitor' : 'Add New Telemetry Monitor'}
               </h2>
@@ -451,7 +451,7 @@ export default function MonitoringPage({ token }) {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Home Server WebApp"
-                  className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2 px-3 text-white text-sm focus:outline-none focus:border-[#00C853]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xl py-2 px-3 text-white text-sm focus:outline-hidden focus:border-signal-green"
                 />
               </div>
 
@@ -463,7 +463,7 @@ export default function MonitoringPage({ token }) {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2 px-3 text-white text-sm focus:outline-none focus:border-[#00C853]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xl py-2 px-3 text-white text-sm focus:outline-hidden focus:border-signal-green"
                   >
                     <option value="http">HTTP(s) URL</option>
                     <option value="ping">ICMP Ping</option>
@@ -485,12 +485,12 @@ export default function MonitoringPage({ token }) {
                       required
                       value={intervalVal}
                       onChange={(e) => setIntervalVal(parseInt(e.target.value, 10) || 1)}
-                      className="w-20 bg-[#161B22] border border-[#2A3341] rounded-xl py-2 px-2.5 text-white text-sm focus:outline-none focus:border-[#00C853]"
+                      className="w-20 bg-graphite border border-graphite-border rounded-xl py-2 px-2.5 text-white text-sm focus:outline-hidden focus:border-signal-green"
                     />
                     <select
                       value={intervalUnit}
                       onChange={(e) => setIntervalUnit(e.target.value)}
-                      className="flex-1 bg-[#161B22] border border-[#2A3341] rounded-xl py-2 px-2 text-white text-sm focus:outline-none focus:border-[#00C853]"
+                      className="flex-1 bg-graphite border border-graphite-border rounded-xl py-2 px-2 text-white text-sm focus:outline-hidden focus:border-signal-green"
                     >
                       <option value="seconds">Seconds</option>
                       <option value="minutes">Minutes</option>
@@ -510,7 +510,7 @@ export default function MonitoringPage({ token }) {
                   value={formData.url}
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                   placeholder="e.g. https://example.com or 192.168.1.10:8080"
-                  className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2 px-3 text-white text-sm focus:outline-none focus:border-[#00C853]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xl py-2 px-3 text-white text-sm focus:outline-hidden focus:border-signal-green"
                 />
               </div>
 
@@ -525,28 +525,28 @@ export default function MonitoringPage({ token }) {
                     value={formData.keyword}
                     onChange={(e) => setFormData({ ...formData, keyword: e.target.value })}
                     placeholder="e.g. OK or operational"
-                    className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2 px-3 text-white text-sm focus:outline-none focus:border-[#00C853]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xl py-2 px-3 text-white text-sm focus:outline-hidden focus:border-signal-green"
                   />
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2A3341]">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-graphite-border">
                 <button
                   type="button"
                   disabled={submitting}
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-[#2A3341] disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-graphite-border disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl bg-[#00C853] text-[#161B22] font-bold text-xs hover:bg-[#69F0AE] transition-all shadow-lg shadow-[#00C853]/20 flex items-center gap-2 disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-signal-green text-graphite font-bold text-xs hover:bg-signal-glow transition-all shadow-lg shadow-[#00C853]/20 flex items-center gap-2 disabled:opacity-50"
                 >
                   {submitting ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#161B22]" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-graphite" />
                       {editingMonitor ? 'Saving...' : 'Creating...'}
                     </>
                   ) : (

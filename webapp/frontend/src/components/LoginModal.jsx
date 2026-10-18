@@ -34,8 +34,8 @@ export default function LoginModal({ onLoginSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#161B22]/90 backdrop-blur-md p-4">
-      <div className="bg-[#1D2430] w-full max-w-md p-8 rounded-2xl border border-[#2A3341] shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-graphite/90 backdrop-blur-md p-4">
+      <div className="bg-graphite-surface w-full max-w-md p-8 rounded-2xl border border-graphite-border shadow-2xl">
         <div className="flex flex-col items-center text-center mb-8">
           <img src="/logo.svg" alt="Homelab Sentinel" className="w-48 h-auto object-contain mb-3" />
           <p className="text-sm text-gray-400">Protected Sentinel Console</p>
@@ -43,7 +43,7 @@ export default function LoginModal({ onLoginSuccess }) {
 
         {error && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3 text-red-400 text-sm">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -61,7 +61,7 @@ export default function LoginModal({ onLoginSuccess }) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. admin"
-                className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 pl-11 pr-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+                className="w-full bg-graphite border border-graphite-border rounded-xl py-2.5 pl-11 pr-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
               />
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function LoginModal({ onLoginSuccess }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-[#161B22] border border-[#2A3341] rounded-xl py-2.5 pl-11 pr-4 text-white text-sm focus:outline-none focus:border-[#00C853] focus:ring-1 focus:ring-[#69F0AE] transition-all"
+                className="w-full bg-graphite border border-graphite-border rounded-xl py-2.5 pl-11 pr-4 text-white text-sm focus:outline-hidden focus:border-signal-green focus:ring-1 focus:ring-[#69F0AE] transition-all"
               />
             </div>
           </div>
@@ -86,11 +86,11 @@ export default function LoginModal({ onLoginSuccess }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#00C853] hover:bg-[#69F0AE] text-[#161B22] font-bold py-3 rounded-xl transition-all shadow-lg shadow-[#00C853]/25 flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+            className="w-full bg-signal-green hover:bg-signal-glow text-graphite font-bold py-3 rounded-xl transition-all shadow-lg shadow-[#00C853]/25 flex items-center justify-center gap-2 text-sm disabled:opacity-50"
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-[#161B22]" />
+                <Loader2 className="w-4 h-4 animate-spin text-graphite" />
                 Signing in...
               </>
             ) : (

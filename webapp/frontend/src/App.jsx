@@ -100,9 +100,9 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#161B22] flex items-center justify-center text-gray-300">
+      <div className="min-h-screen bg-graphite flex items-center justify-center text-gray-300">
         <div className="flex items-center space-x-3">
-          <div className="w-5 h-5 border-2 border-[#00C853] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-5 h-5 border-2 border-signal-green border-t-transparent rounded-full animate-spin"></div>
           <span className="text-sm font-medium">Initializing Homelab Sentinel...</span>
         </div>
       </div>
@@ -143,23 +143,23 @@ export default function App() {
       />
       <SidebarInset>
         {/* App Header */}
-        <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-[#2A3341] px-4 transition-[width,height] ease-linear bg-[#161B22]/90 backdrop-blur-md sticky top-0 z-30 min-w-0">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-graphite-border px-4 transition-[width,height] ease-linear bg-graphite/90 backdrop-blur-md sticky top-0 z-30 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 text-xs min-w-0 overflow-hidden">
-            <SidebarTrigger className="-ml-1 flex-shrink-0" />
-            <div className="h-4 w-[1px] bg-[#2A3341] mx-0.5 sm:mx-1 flex-shrink-0" />
+            <SidebarTrigger className="-ml-1 shrink-0" />
+            <div className="h-4 w-px bg-graphite-border mx-0.5 sm:mx-1 shrink-0" />
             <span className="text-gray-400 font-medium truncate hidden xs:inline">Homelab Sentinel</span>
             <span className="text-gray-600 hidden xs:inline">/</span>
-            <span className="text-[#00C853] font-semibold capitalize truncate">{activeTab}</span>
+            <span className="text-signal-green font-semibold capitalize truncate">{activeTab}</span>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setIsCmdKOpen(true)}
-              className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-[#1D2430] hover:bg-[#2A3341] text-gray-400 hover:text-white border border-[#2A3341] rounded-xl text-xs transition-all shadow-sm min-h-[36px]"
+              className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-graphite-surface hover:bg-graphite-border text-gray-400 hover:text-white border border-graphite-border rounded-xl text-xs transition-all shadow-xs min-h-[36px]"
             >
-              <Search className="w-3.5 h-3.5 text-[#00C853]" />
+              <Search className="w-3.5 h-3.5 text-signal-green" />
               <span className="hidden sm:inline font-medium">Search...</span>
-              <kbd className="px-1.5 py-0.5 bg-[#161B22] text-[10px] text-gray-400 border border-[#2A3341] rounded font-mono">⌘K</kbd>
+              <kbd className="px-1.5 py-0.5 bg-graphite text-[10px] text-gray-400 border border-graphite-border rounded-sm font-mono">⌘K</kbd>
             </button>
           </div>
         </header>
@@ -173,14 +173,14 @@ export default function App() {
           {activeTab === 'settings' && <SettingsPage token={token} />}
         </div>
 
-        <footer className="border-t border-[#2A3341] py-4 px-6 text-center text-xs text-gray-400 bg-[#1D2430]/40 flex items-center justify-center gap-2">
+        <footer className="border-t border-graphite-border py-4 px-6 text-center text-xs text-gray-400 bg-graphite-surface/40 flex items-center justify-center gap-2">
           <span>Homelab Sentinel v1.0</span>
           <span>•</span>
           <a
             href="https://github.com/MoayadAlshehry"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#00C853] hover:underline font-medium transition-colors"
+            className="text-signal-green hover:underline font-medium transition-colors"
           >
             GitHub
           </a>
