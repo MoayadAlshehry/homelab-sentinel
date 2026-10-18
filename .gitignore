@@ -25,3 +25,6 @@ webapp/static/index.html
 .DS_Store
 .vscode/
 .idea/
+# Local test environments and results
+.venv/
+.pytest_cache/

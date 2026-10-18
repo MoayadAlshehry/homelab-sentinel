@@ -1,5 +1,6 @@
 import asyncio
 import os
+from pathlib import Path
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -92,11 +93,16 @@ async def serve_root():
 
 @app.get("/{full_path:path}")
 async def serve_static_or_spa(full_path: str):
-    if full_path.startswith("api/"):
-        return {"error": "API route not found", "path": full_path}
+    if full_path == "api" or full_path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="API route not found")
     
-    file_path = os.path.join(STATIC_DIR, full_path)
-    if os.path.exists(file_path) and os.path.isfile(file_path):
+    static_root = Path(STATIC_DIR).resolve()
+    file_path = (static_root / full_path).resolve()
+    try:
+        file_path.relative_to(static_root)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    if file_path.is_file():
         return FileResponse(file_path)
     
     # Do not return index.html for missing static assets or files with extensions
